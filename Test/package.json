@@ -1,0 +1,38 @@
+{
+  "name": "Test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/server-dev.js",
+  "scripts": {
+    "buildDev": "webpack --mode development --config webpack.server.config.js && webpack --mode development --config webpack.dev.config.js",
+    "buildProd": "webpack --mode production --config webpack.server.config.js && webpack --mode production  --config webpack.prod.config.js",
+    "start": "node ./dist/server.js",
+    "serverStart": "node ./server/server-dev.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@types/express": "^4.17.1",
+    "babel-loader": "^8.0.6",
+    "body-parser": "^1.19.0",
+    "css-loader": "^3.4.2",
+    "express": "^4.17.1",
+    "file-loader": "^5.0.2",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "jquery": "^3.4.1",
+    "package": "^1.0.1",
+    "style-loader": "^1.1.3",
+    "underscore": "^1.9.2",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
