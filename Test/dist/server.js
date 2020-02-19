@@ -90,11 +90,10 @@
 /*!******************************!*\
   !*** ./server/server-dev.js ***!
   \******************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! path */ \"path\");\n/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! express */ \"express\");\n/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_1__);\n\n\nvar app = express__WEBPACK_IMPORTED_MODULE_1___default()(),\n    DIST_DIR = __dirname,\n    PROJ_DIR = 'D:/Site/Test/',\n    HTML_DIR = '../html/';\napp.use(express__WEBPACK_IMPORTED_MODULE_1___default.a[\"static\"](DIST_DIR));\napp.get('/', function (req, res) {\n  res.sendFile(PROJ_DIR + 'html/MainPage.html');\n});\nvar PORT = process.env.PORT || 8080;\napp.listen(PORT, function () {\n  console.log(\"App listening to \".concat(PORT, \"....\"));\n  console.log('Press Ctrl+C to quit.');\n});\napp.get('/reg', function (req, res) {\n  res.sendFile(HTML_DIR + 'MainPage.html');\n});\n\n//# sourceURL=webpack:///./server/server-dev.js?");
+eval("var express = __webpack_require__(/*! express */ \"express\");\n\nvar app = express(),\n    DIST_DIR = __dirname,\n    PROJ_DIR = 'D:/Site/Test/';\napp.use(express[\"static\"](PROJ_DIR));\napp.get('/', function (req, res) {\n  res.sendFile(PROJ_DIR + 'html/MainPage.html');\n});\nvar PORT = process.env.PORT || 8080;\napp.listen(PORT, function () {\n  console.log(\"App listening tto \".concat(PORT, \"....\"));\n  console.log('Press Ctrl+C to quit.');\n});\napp.get('/reg', function (req, res) {\n  res.sendFile(PROJ_DIR + 'html/registryPage.html');\n});\napp.get('/page/:id', function (req, res) {\n  res.sendFile(PROJ_DIR + 'html/page' + req.params.id + '.html');\n});\n\n//# sourceURL=webpack:///./server/server-dev.js?");
 
 /***/ }),
 
@@ -106,17 +105,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var path
 /***/ (function(module, exports) {
 
 eval("module.exports = require(\"express\");\n\n//# sourceURL=webpack:///external_%22express%22?");
-
-/***/ }),
-
-/***/ "path":
-/*!***********************!*\
-  !*** external "path" ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("module.exports = require(\"path\");\n\n//# sourceURL=webpack:///external_%22path%22?");
 
 /***/ })
 

@@ -4,7 +4,7 @@ const app = express(),
     PROJ_DIR = 'D:/Site/Test/';
 app.use(express.static(PROJ_DIR));
 
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(PROJ_DIR + 'html/MainPage.html')
 });
 
@@ -15,5 +15,9 @@ app.listen(PORT, () => {
 });
 
 app.get('/reg', (req, res) => {
-    res.sendFile(PROJ_DIR + 'html/MainPage.html');
+    res.sendFile(PROJ_DIR + 'html/registryPage.html');
+});
+
+app.get('/page/:id', (req, res) => {
+    res.sendFile(PROJ_DIR + 'html/page' + req.params.id +'.html');
 });
