@@ -1,14 +1,17 @@
 const express = require('express');
 const bodyP = require('body-parser');
-
 const app = express(),
     DIST_DIR = __dirname,
-    PROJ_DIR = 'D:/Site/Test/';
+    //PROJ_DIR = 'D:/Site/Test/',
+    WORK_PROJ_DIR = 'D:/Диплом/Site/Test/';
+
+const PROJ_DIR = WORK_PROJ_DIR;
+
 const jsonParser = bodyP.json();
 console.log(jsonParser);
 const urlencodedP = bodyP.urlencoded({extended: false});
 
-app.set('views engine','ejs');
+app.set('view engine','ejs');
 
 app.use(express.static(PROJ_DIR));
 
@@ -33,6 +36,7 @@ app.get('/page/:id', (req, res) => {
 app.post('/',urlencodedP,function (req,res) {
    if(!req.body) return res.sendStatus(400);
     console.log(req.body);
+    let data = {firstName:req.body.firstName, secName:req.body.secondName};
    console.log('Arguments: ' + req.body.firstName + ' ' +  req.body.secondName);
-   res.render('page1',{firstName:req.body.firstName, secName:req.body.secondName});
+   res.render('page1',{data:data});
 });
