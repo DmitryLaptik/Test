@@ -1,21 +1,23 @@
-const sqlite3 = require('sqlite3').verbose();
+
 
 class DataBase{
     constructor(){
         let me = this;
+        let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite','OPEN_READWRITE');
-        //me.initialization();
-        // me.insertValue('users','Имя','Фамилия',1);
-        me.db.each('SELECT fName ,sName, testMark FROM users' , function(err, row) {
-            console.log(row);
-        });
+
+
+        // me.insertValue('users','Имя3','Фамилия3',1);
+        // me.db.each('SELECT fName, sName, testMark FROM users' , function(err, row) {
+        //     console.log(row);
+        // });
     };
 
 
     initialization(){
         let me = this;
         me.db.serialize(function() {
-            me.db.run('Create TABLE users (fName TEXT, sName TEXT, testMark NUM)');
+            me.db.run('Create TABLE if not exists users (fName TEXT, sName TEXT, testMark NUM)');
             console.log('Create TABLE users');
         });
     };
@@ -27,22 +29,22 @@ class DataBase{
         console.log(values);
         let placeholders = values.map((value) => '?').join(',');
         me.db.serialize(function() {
-            let stmt = me.db.prepare('INSERT INTO '+ tableName +' as alias VALUES (' + placeholders + ')');
-
-
+            let stmt = me.db.prepare('INSERT INTO '+ tableName +' VALUES (' + placeholders + ')');
             stmt.run(values, function (err) {
-                if (err) {
-                    return console.log(err.message);
-                }
+                if (err) return console.log(err.message);
                 console.log('Success insert into '+ tableName);
             });
 
-            // me.db.each('SELECT fName ,sName, testMark FROM ' + tableName , function(err, row) {
-            //     console.log(row.id + ': ' + row.info);
-            // });
         });
     };
 
+
+    returnAllDataFromTable(table){
+        let me = this;
+        me.db.each('SELECT * FROM ' + table, function(err, row) {
+            console.log(row);
+        });
+    };
 
     serializeDB(){
         let me = this;
@@ -66,10 +68,14 @@ class DataBase{
 
     };
 
+    tableDelete(table){
+        let me = this;
+        me.db.run('Drop TABLE '+table);
+    };
+
     DBClose(){
       this.db.close();
     };
 }
-
-
-let DB = new DataBase();
+exports = module.exports;
+exports.DataBase = DataBase;
