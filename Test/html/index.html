@@ -1,55 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Page 1</title>
-    <link rel="shortcut icon" href="#">
+	<title>Login V16</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
 </head>
 <body>
-<form>
-    <p>
-    <fieldset>
-        <legend>Title<abbr title="This field is mandatory">*</abbr></legend>
-        <input type="radio" required name="title" id="r1" value="Mr"><label for="r1">Mr.</label>
-        <input type="radio" required name="title" id="r2" value="Ms"><label for="r2">Ms.</label>
-        <input type="radio" required name="title" id="r3" value="Ms"><label for="r2">Me.</label>
-        <input type="radio" required name="title" id="r4" value="Ms"><label for="r2">Mq.</label>
-    </fieldset>
-    </p>
-    <p>
-        <label for="n1">How old are you?</label>
-        <!-- The pattern attribute can act as a fallback for browsers which
-             don't implement the number input type but support the pattern attribute.
-             Please note that browsers that support the pattern attribute will make it
-             fail silently when used with a number field.
-             Its usage here acts only as a fallback -->
-        <input type="number" min="12" max="120" step="1" id="n1" name="age"
-               pattern="\d+">
-    </p>
-    <p>
-        <label for="t1">What's your favorite fruit?<abbr title="This field is mandatory">*</abbr></label>
-        <input type="text" id="t1" name="fruit" list="l1" required
-               pattern="[Bb]anana|[Cc]herry|[Aa]pple|[Ss]trawberry|[Ll]emon|[Oo]range">
-        <datalist id="l1">
-            <option>Banana</option>
-            <option>Cherry</option>
-            <option>Apple</option>
-            <option>Strawberry</option>
-            <option>Lemon</option>
-            <option>Orange</option>
-        </datalist>
-    </p>
-    <p>
-        <label for="t2">What's your e-mail?</label>
-        <input type="email" id="t2" name="email">
-    </p>
-    <p>
-        <label for="t3">Leave a short message</label>
-        <textarea id="t3" name="msg" maxlength="140" rows="5"></textarea>
-    </p>
-    <p>
-        <button>Submit</button>
-    </p>
-</form>
+	
+	<div class="limiter">
+		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
+			<div class="wrap-login100 p-t-30 p-b-50">
+				<span class="login100-form-title p-b-41">
+					Account Login
+				</span>
+				<form class="login100-form validate-form p-b-33 p-t-5">
+
+					<div class="wrap-input100 validate-input" data-validate = "Enter username">
+						<input class="input100" type="text" name="username" placeholder="User name">
+						<span class="focus-input100" data-placeholder="&#xe82a;"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate="Enter password">
+						<input class="input100" type="password" name="pass" placeholder="Password">
+						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+					</div>
+
+					<div class="container-login100-form-btn m-t-32">
+						<button class="login100-form-btn">
+							Login
+						</button>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+	
+
+	<div id="dropDownSelect1"></div>
+	
+<!--&lt;!&ndash;===============================================================================================&ndash;&gt;-->
+<!--	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>-->
+<!--&lt;!&ndash;===============================================================================================&ndash;&gt;-->
+<!--	<script src="vendor/animsition/js/animsition.min.js"></script>-->
+<!--&lt;!&ndash;===============================================================================================&ndash;&gt;-->
+<!--	<script src="vendor/bootstrap/js/popper.js"></script>-->
+<!--	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>-->
+<!--&lt;!&ndash;===============================================================================================&ndash;&gt;-->
+<!--	<script src="vendor/select2/select2.min.js"></script>-->
+<!--&lt;!&ndash;===============================================================================================&ndash;&gt;-->
+<!--	<script src="vendor/daterangepicker/moment.min.js"></script>-->
+<!--	<script src="vendor/daterangepicker/daterangepicker.js"></script>-->
+<!--&lt;!&ndash;===============================================================================================&ndash;&gt;-->
+<!--	<script src="vendor/countdowntime/countdowntime.js"></script>-->
+<!--&lt;!&ndash;===============================================================================================&ndash;&gt;-->
+<!--	<script src="js/main.js"></script>-->
+
 </body>
 </html>

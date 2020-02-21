@@ -7,17 +7,43 @@ class DataBase{
         me.db = new sqlite3.Database('dbsqlite','OPEN_READWRITE');
 
 
-        // me.insertValue('users','Имя3','Фамилия3',1);
+        //me.insertValue('users','Имя3','Фамилия3',1);
         // me.db.each('SELECT fName, sName, testMark FROM users' , function(err, row) {
-        //     console.log(row);
+        //     console.log(row.rowid + ' ' + row.fName);
         // });
+
+
+        me.db.serialize(function() {
+            me.db.run('Create TABLE if not exists users     (idUser Integer primary key AUTOINCREMENT , ' +
+                                                            'fName TEXT, ' +
+                                                            'sName TEXT, ' +
+                                                            'testMark NUM)');
+
+            me.db.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
+                                                            'content TEXT, ' +
+                                                            'idAnswer Integer,' +
+                                                            'FOREIGN KEY (idAnswer) REFERENCES answers(idAnswer) ON DELETE CASCADE ON UPDATE CASCADE)');
+
+            me.db.run('Create TABLE if not exists answers   (idAnswer Integer primary key AUTOINCREMENT , ' +
+                                                            'content TEXT)');
+
+            me.db.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
+                                                            'idUser Integer, ' +
+                                                            'idQuest Integer, ' +
+                                                            'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
+                                                            'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
+            console.log('Create TABLE users');
+        });
     };
 
 
     initialization(){
         let me = this;
         me.db.serialize(function() {
-            me.db.run('Create TABLE if not exists users (fName TEXT, sName TEXT, testMark NUM)');
+            me.db.run('Create TABLE if not exists users     (idUser NUM, fName TEXT, sName TEXT, testMark NUM)');
+            me.db.run('Create TABLE if not exists questions (idQuest NUM, content TEXT, idAnswer NUM)');
+            me.db.run('Create TABLE if not exists answers   (idAnswer NUM, content TEXT)');
+            me.db.run('Create TABLE if not exists results   (idResult NUM, idUser NUM idQuest NUM )');
             console.log('Create TABLE users');
         });
     };
@@ -63,6 +89,24 @@ class DataBase{
         });
     };
 
+    nextTest() {
+        let me = this, question, answers = [];
+        me.db.serialize(function() {
+
+            me.db.run('select from TABLE lorem (info TEXT)');
+            let stmt = me.db.prepare('INSERT INTO lorem VALUES (?)');
+
+            for (let i = 0; i < 10; i++) {
+                stmt.run('Ipsum ' + i);
+            }
+
+            me.db.each('SELECT rowid AS id, info FROM lorem', function(err, row) {
+                console.log(row.id + ': ' + row.info);
+            });
+        });
+
+    }
+
 
     insert(){
 
@@ -77,5 +121,9 @@ class DataBase{
       this.db.close();
     };
 }
+let data = new DataBase();
+
+
+
 exports = module.exports;
 exports.DataBase = DataBase;

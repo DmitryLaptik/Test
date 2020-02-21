@@ -42,9 +42,23 @@ app.get('/page/:id', (req, res) => {
 app.post('/',urlencodedP,function (req,res) {
     if(!req.body) return res.sendStatus(400);
     console.log(req.body);
+    let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
+
+    db.insertValue('users',DBdata.firstName,DBdata.secName, null);
+    db.returnAllDataFromTable('users');
+
+    db.nextTest();
+
+    res.render('testpage',{data:data});
+});
+
+
+app.post('/#',urlencodedP,function (req,res) {
+    if(!req.body) return res.sendStatus(400);
+    console.log(req.body);
     let data = {firstName:req.body.firstName, secName:req.body.secondName};
     db.insertValue('users',data.firstName,data.secName, null);
     db.returnAllDataFromTable('users');
-    console.log('Arguments: ' + req.body.firstName + ' ' +  req.body.secondName);
-    res.render('page1',{data:data});
+    console.log('Arguments: ' + req.body.firstName + '1 ' +  req.body.secondName + '1 ');
+    res.render('testpage',{data:data});
 });
