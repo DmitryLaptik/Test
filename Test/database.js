@@ -2,23 +2,17 @@
 
 class DataBase{
     constructor(){
+        console.log('create DB');
         let me = this;
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite','OPEN_READWRITE');
 
-
-        //me.insertValue('users','Имя3','Фамилия3',1);
-        me.db.each('SELECT * FROM questions' , function(err, row) {
-            console.log(row);
-        });
-
-        //me.insertValue('answers',null,'Content2');
-        me.insertValue('questions','Content2',1);
-
+        me.calcResult(12);
     };
 
 
     initialization(){
+        console.log('initialization');
         let me = this;
         me.db.serialize(function() {
             me.db.run('Create TABLE if not exists users     (idUser Integer primary key AUTOINCREMENT, ' +
@@ -37,7 +31,9 @@ class DataBase{
             me.db.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
                 'idUser Integer, ' +
                 'idQuest Integer, ' +
+                'idAnswer Integer, ' +
                 'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
+                'FOREIGN KEY (idAnswer) REFERENCES answers(idAnswer) ON DELETE CASCADE ON UPDATE CASCADE ' +
                 'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
             console.log('Create TABLE users');
         });
@@ -46,7 +42,7 @@ class DataBase{
 
 
     insertValue(tableName,...values){
-        console.log('insertValue into '+ tableName);
+        console.log('insertValue into \''+ tableName+ '\'');
         let me = this;
         console.log(values);
         values.unshift(null);
@@ -55,7 +51,7 @@ class DataBase{
             let stmt = me.db.prepare('INSERT INTO '+ tableName +' VALUES (' + placeholders + ')');
             stmt.run(values, function (err) {
                 if (err) return console.log(err.message);
-                console.log('Success insert into '+ tableName);
+                console.log('Success insert into \''+ tableName + '\'');
             });
 
         });
@@ -63,11 +59,20 @@ class DataBase{
 
 
     returnAllDataFromTable(table){
+        console.log('returnAllDataFromTable');
         let me = this;
         me.db.each('SELECT * FROM ' + table, function(err, row) {
             console.log(row);
         });
     };
+
+    getTest(){
+        console.log('getTest');
+        let me = this;
+        me.db.each('SELECT * FROM questions', function(err, row) {
+            return ;
+        });
+    }
 
     serializeDB(){
         let me = this;
@@ -86,28 +91,16 @@ class DataBase{
         });
     };
 
-    nextTest() {
-        let me = this, question, answers = [];
-        me.db.serialize(function() {
-
-            me.db.run('select from TABLE lorem (info TEXT)');
-            let stmt = me.db.prepare('INSERT INTO lorem VALUES (?)');
-
-            for (let i = 0; i < 10; i++) {
-                stmt.run('Ipsum ' + i);
-            }
-
-            me.db.each('SELECT rowid AS id, info FROM lorem', function(err, row) {
-                console.log(row.id + ': ' + row.info);
-            });
+    calcResult(userId){
+        let me = this;
+        me.db.each('SELECT questions.idQuest, questions.idAnswer, results.idAnswer as userAnswer from results join questions on questions.idQuest = results.idQuest where idUser = ' + userId, function(err, row) {
+            console.log(row);
         });
-
     }
 
-
-    insert(){
-
-    };
+    nextTest() {
+        console.log('nextTest');
+    }
 
     tableDelete(table){
         let me = this;
@@ -118,9 +111,8 @@ class DataBase{
       this.db.close();
     };
 }
-let data = new DataBase();
 
-
+let db = new DataBase();
 
 exports = module.exports;
 exports.DataBase = DataBase;

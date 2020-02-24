@@ -39,9 +39,8 @@ app.get('/page/:id', (req, res) => {
     res.sendFile(PROJ_DIR + 'html/page' + req.params.id +'.html');
 });
 
-app.post('/',urlencodedP,function (req,res) {
+app.post('/',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
-    console.log(req.body);
     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
 
     db.insertValue('users',DBdata.firstName,DBdata.secName, null);
@@ -49,11 +48,11 @@ app.post('/',urlencodedP,function (req,res) {
 
     db.nextTest();
 
-    res.render('testpage',{data:data});
+    res.render('page1',{data:DBdata});
 });
 
 
-app.post('/#',urlencodedP,function (req,res) {
+app.post('/next',urlencodedP,function (req,res) {
     if(!req.body) return res.sendStatus(400);
     console.log(req.body);
     let data = {firstName:req.body.firstName, secName:req.body.secondName};
