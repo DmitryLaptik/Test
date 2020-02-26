@@ -4,10 +4,10 @@ const { DataBase } = require('../database.js');
 
 const app = express(),
     DIST_DIR = __dirname,
-    //PROJ_DIR = 'D:/Site/Test/',
+    PROJ_DIR = 'D:/Site/Test/',
     WORK_PROJ_DIR = 'D:/Диплом/Site/Test/';
 
-const PROJ_DIR = WORK_PROJ_DIR;
+// const PROJ_DIR = WORK_PROJ_DIR;
 
 const db = new DataBase();
 

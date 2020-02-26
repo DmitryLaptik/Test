@@ -6,8 +6,8 @@ class DataBase{
         let me = this;
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite','OPEN_READWRITE');
-
-        me.calcResult(12);
+        //me.initData(me);
+        me.returnAllDataFromTable('answers')
     };
 
 
@@ -36,13 +36,88 @@ class DataBase{
                 'FOREIGN KEY (idAnswer) REFERENCES answers(idAnswer) ON DELETE CASCADE ON UPDATE CASCADE ' +
                 'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
             console.log('Create TABLE users');
+            //me.initData(me);
         });
 
     };
 
+    initDataAnswers(me){//answers
+        me.insertValue('answers','Другое.');
+        me.insertValue('answers','Числа от 0 до 9.');
+        me.insertValue('answers','Числа от 0 до 10.');
+        me.insertValue('answers','10 раз число 0.');
+        me.insertValue('answers','10 раз число 10.');
+        me.insertValue('answers','undefined');
+        me.insertValue('answers','Будет ошибка.');
+        me.insertValue('answers','null');
+        me.insertValue('answers','Три: for, while и do...while.');
+        me.insertValue('answers','0');
+        me.insertValue('answers','1');
+        me.insertValue('answers','2');
+        me.insertValue('answers','3');
+        me.insertValue('answers','4');
+        me.insertValue('answers','9');
+        me.insertValue('answers','10');
+        me.insertValue('answers','Больше.');
+        me.insertValue('answers','instanceof');
+        me.insertValue('answers','constructor');
+        me.insertValue('answers','parent');
+        me.insertValue('answers','new');
+        me.insertValue('answers','Все имеют специальное использование.');
+        me.insertValue('answers','this');
+        me.insertValue('answers','Да.');
+        me.insertValue('answers','Объекту user.');
+        me.insertValue('answers','Нет.');
+        me.insertValue('answers','new Array.prototype.constructor(1, 2)');
+        me.insertValue('answers','new Array(1, 2)');
+        me.insertValue('answers','Array(1, 2)');
+        me.insertValue('answers','[1, 2]');
+        me.insertValue('answers','1..2');
+        me.insertValue('answers','Все варианты правильные.');
+        me.insertValue('answers','В первом выражении ошибка, что еще за «!!» ??');
+        me.insertValue('answers','true');
+        me.insertValue('answers','false');
+        me.insertValue('answers','< script type="text/javascript" src="my.js"></script>');
+        me.insertValue('answers','< script src="my.js"></script>');
+        me.insertValue('answers','< script src="my.js"/>');
+        me.insertValue('answers','< хачу-javascript отсюда="my.js">');
+        me.insertValue('answers','\"truefalse\"');
+        me.insertValue('answers','NaN');
+        me.insertValue('answers','Одна и та же.');
+        me.insertValue('answers','Разные.');
+        me.insertValue('answers','С большой буквы переменные называть нельзя.');
+        me.insertValue('answers','Слово «apple» является зарезервированным, нельзя использовать.');
+        me.insertValue('answers','Ошибка: переменная не определена.');
+        me.insertValue('answers','Только две: for и while.');
+        me.insertValue('answers','Только одна: for.');
+        me.insertValue('answers','В коде ошибка.');
+        me.insertValue('answers','В коде ошибка.');
+        me.insertValue('answers','*');
+        me.insertValue('answers','/');
+        me.insertValue('answers','+');
+        me.insertValue('answers','-');
+        me.insertValue('answers','>>>');
+        me.insertValue('answers','Разница в значении, которое возвращает такой вызов.');
+        me.insertValue('answers','Разница в значении i после вызова.');
+        me.insertValue('answers','Нет никакой разницы.');
+        me.insertValue('answers','Да, существует значение x, для которого они работают по-разному.');
+        me.insertValue('answers','Нет, они полностью взаимозаменяемы.');
+        me.insertValue('answers','Нет никакой разницы.');
+        me.insertValue('answers','Зависит от браузера.');
+        me.insertValue('answers','Нет, вызов должен стоять после объявления.');
+        me.insertValue('answers','Нет такой переменной после цикла.');
+        me.insertValue('answers','Да, X – это undefined.');
+        me.insertValue('answers','Да, X – это null.');
+        me.insertValue('answers','Да, другое.');
+        me.insertValue('answers','Нет, не бывает.');
+    };
+    initDataQuestions(me){
+        me.insertValue('questions','Что выведет alert?\nlet str = "Hello";\nstr.something = 5;\nalert(str.something); // ?',7);
+        me.insertValue('questions','Что выведет этот код?\nf.call(null);\nfunction f() {\nalert(this);\n}',8);
+        me.insertValue('questions','Что выведет этот код?\nf.call(null);\nfunction f() {\nalert(this);\n}',8);
 
+    };
     insertValue(tableName,...values){
-        console.log('insertValue into \''+ tableName+ '\'');
         let me = this;
         console.log(values);
         values.unshift(null);
