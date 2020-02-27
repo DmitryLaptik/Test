@@ -2,31 +2,64 @@
 
 class DataBase{
     constructor(){
-        console.log('create DB');
         let me = this;
         let sqlite3 = require('sqlite3').verbose();
-        me.db = new sqlite3.Database('dbsqlite','OPEN_READWRITE');
-        //me.initData(me);
-        me.returnAllDataFromTable('answers')
+        me.db = new sqlite3.Database('dbsqlite.sqlite','OPEN_READWRITE');
+        //me.initializationTables();
+        //me.initDataAnswers(me);
+
+         //me.initDataQuestions(me);
+
+        //me.insertValue('answers','string');
+        //me.initDataQuestions(me);
+        // me.db.each('SELECT content1,content2,content as answerContent FROM questions join answers on questions.idRightAnswer = answers.idAnswer',
+        //     function(err, row) {
+        //     console.log(row);
+        // });
+        // me.db.each('SELECT content FROM questions join answers on questions.idAnswer1 = answers.idAnswer where idQuest = 1',
+        //     function(err, row) {
+        //         console.log(row);
+        // });
+        //this.insertValue('users','fName','secName',0,null);
+
+
+        // console.log(me.getTest(1));
+        //this.insertValue('results',1,3,15);
+
+        //me.returnAllDataFromTable('answers');
+
+        // me.resetTestCount(1);
+        // me.returnAllDataFromTable('users');
+        //console.log(typeof test);
+        me.getTest(1);
+        //console.log(test);
     };
 
 
-    initialization(){
-        console.log('initialization');
+    initializationTables(){
         let me = this;
         me.db.serialize(function() {
-            me.db.run('Create TABLE if not exists users     (idUser Integer primary key AUTOINCREMENT, ' +
+            me.db.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
                 'fName TEXT, ' +
                 'sName TEXT, ' +
+                'countFinishTests integer, ' +
                 'testMark NUM)');
 
             me.db.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
-                'content TEXT, ' +
-                'idAnswer Integer,' +
-                'FOREIGN KEY (idAnswer) REFERENCES answers(idAnswer) ON DELETE CASCADE ON UPDATE CASCADE)');
+                'content1 TEXT, ' +
+                'content2 TEXT, ' +
+                'idAnswer1 Integer default null, ' +
+                'idAnswer2 Integer default null, ' +
+                'idAnswer3 Integer default null, ' +
+                'idAnswer4 Integer default null, ' +
+                'idAnswer5 Integer default null, ' +
+                'idAnswer6 Integer default null, ' +
+                'idAnswer7 Integer default null, ' +
+                'idRightAnswer Integer, ' +
+                'FOREIGN KEY (idRightAnswer) REFERENCES answers(idRightAnswer) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.db.run('Create TABLE if not exists answers   (idAnswer Integer primary key AUTOINCREMENT , ' +
-                'content TEXT)');
+            me.db.run('Create TABLE if not exists answers (idAnswer Integer primary key AUTOINCREMENT , ' +
+                'content TEXT UNIQUE)');
 
             me.db.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
                 'idUser Integer, ' +
@@ -35,8 +68,16 @@ class DataBase{
                 'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
                 'FOREIGN KEY (idAnswer) REFERENCES answers(idAnswer) ON DELETE CASCADE ON UPDATE CASCADE ' +
                 'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
+
+            me.db.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
+                '   AFTER INSERT ON results ' +
+                'BEGIN\n' +
+                ' update users \n' +
+                ' set countFinishTests = countFinishTests + 1 \n' +
+                ' where idUser = NEW.idUser;\n' +
+                ' END');
+
             console.log('Create TABLE users');
-            //me.initData(me);
         });
 
     };
@@ -56,8 +97,13 @@ class DataBase{
         me.insertValue('answers','2');
         me.insertValue('answers','3');
         me.insertValue('answers','4');
+        me.insertValue('answers','5');
+        me.insertValue('answers','6');
+        me.insertValue('answers','7');
+        me.insertValue('answers','8');
         me.insertValue('answers','9');
         me.insertValue('answers','10');
+        me.insertValue('answers','12');
         me.insertValue('answers','Больше.');
         me.insertValue('answers','instanceof');
         me.insertValue('answers','constructor');
@@ -91,7 +137,6 @@ class DataBase{
         me.insertValue('answers','Только две: for и while.');
         me.insertValue('answers','Только одна: for.');
         me.insertValue('answers','В коде ошибка.');
-        me.insertValue('answers','В коде ошибка.');
         me.insertValue('answers','*');
         me.insertValue('answers','/');
         me.insertValue('answers','+');
@@ -110,68 +155,183 @@ class DataBase{
         me.insertValue('answers','Да, X – это null.');
         me.insertValue('answers','Да, другое.');
         me.insertValue('answers','Нет, не бывает.');
+        me.insertValue('answers','Hello');
+        me.insertValue('answers','Возводит в степень.');
+        me.insertValue('answers','Умножает число само на себя.');
+        me.insertValue('answers','Нет такого оператора.');
+        me.insertValue('answers','Вася.');
+        me.insertValue('answers','Петя.');
+        me.insertValue('answers','[object Object]');
+        me.insertValue('answers','код функции f.');
+        me.insertValue('answers','ошибка: слишком глубокая рекурсия.');
+        me.insertValue('answers','ошибка: переменная f не определена.');
+        me.insertValue('answers','другое.');
+        me.insertValue('answers','\"\"');
+        me.insertValue('answers','function');
+        me.insertValue('answers','object');
+        me.insertValue('answers','false, false.');
+        me.insertValue('answers','false, true.');
+        me.insertValue('answers','true, false.');
+        me.insertValue('answers','true, true.');
+        me.insertValue('answers','дудкин.');
+        me.insertValue('answers','дупкин.');
+        me.insertValue('answers','пупкин.');
+        me.insertValue('answers','ляпкин-тяпкин.');
+        me.insertValue('answers','string');
+
     };
     initDataQuestions(me){
-        me.insertValue('questions','Что выведет alert?\nlet str = "Hello";\nstr.something = 5;\nalert(str.something); // ?',7);
-        me.insertValue('questions','Что выведет этот код?\nf.call(null);\nfunction f() {\nalert(this);\n}',8);
-        me.insertValue('questions','Что выведет этот код?\nf.call(null);\nfunction f() {\nalert(this);\n}',8);
+        me.insertValue('questions','Чему равна длина arr.length массива arr?', 'let arr = [];\n' +
+            'arr[1] = 1;\n' +
+            'arr[3] = 33;}',10,11,12,13,14,22,null,14);
+        me.insertValue('questions','Есть ли различия между проверками:','if( x <= 100 ) {...}\n' +
+            '// и\n' +
+            'if( !(x > 100) ) {...}',63,64,65,null,null,null,null,63);
 
+        me.insertValue('questions','Какое будет выведено значение?','let x = 5;\nalert( x++ )',15,16,1,null,null,null,null,15);
+
+        me.insertValue('questions','Что выведет alert?','alert(str); // ?\nvar str = "Hello";',71,6,7,null,null,null,null,6);
+
+        me.insertValue('questions','Что делает оператор **?',null,73,74,75,null,null,null,null,73);
+
+        me.insertValue('questions','Чему равно 0 || "" || 2 || undefined || true || falsе ?',null,10,83,12,6,39,40,null,12);
+
+        me.insertValue('questions','Что выведет этот код?','f.call(f);\n' +
+            '\n' +
+            'function f() {\n' +
+            '  alert( this );\n' +
+            '}',78,79,80,81,82,null,null,79);
+
+        me.insertValue('questions','Что выведет этот код?','if (function f(){}) {\nalert(typeof f);\n}',6,84,8,85,54,null,null,6);
+
+        me.insertValue('questions','Что получится, если сложить true + false?',null,45,10,11,46,null,null,null,11);
+
+        me.insertValue('questions','Чему равна переменная name?','let name = "пупкин".replace("п", "д")',90,91,92,93,null,null,null,91);
+
+        me.insertValue('questions','Чему равен typeof null в режиме use strict?',null,8,6,85,94,null,null,null,85);
+
+        me.insertValue('questions','Что выведет этот код?','let obj = {\n' +
+            ' "0": 1,\n' +
+            ' 0: 2\n' +
+            '};\n' +
+            '\n' +
+            'alert( obj["0"] + obj[0] );',12,13,14,21,54,null,null,14);
+
+        me.insertValue('questions','Что выведет этот код?','function F() { return F; }\n' +
+            '\n' +
+            'alert( new F() instanceof F );\n' +
+            'alert( new F() instanceof Function );',86,87,88,89,null,null,null,87);
+
+        me.insertValue('questions','Что выведет alert?','let str = "Hello";\n' +
+            'str.something = 5;\n' +
+            'alert(str.something); // ?',15,6,7,null,null,null,null,6);
+
+        me.insertValue('questions','Что выведет этот код?','for(let i=0; i<10; i++) {\n' +
+            '  setTimeout(function() {\n' +
+            '    alert(i);\n' +
+            '  }, 100);\n' +
+            '}',2,3,4,5,46,null,null,2);
+
+        me.insertValue('questions','Чему равно arr.length?','function MyArray() { }\n' +
+            'MyArray.prototype = [];\n' +
+            '\n' +
+            'let arr = new MyArray();\n' +
+            'arr.push(1, 2, 3);\n' +
+            'alert(arr.length);',10,6,13,54,null,null,null,13);
+
+        me.insertValue('questions','Что выведет sayHi при вызове через setTimeout?','let name = "Вася";\n' +
+            'function sayHi() {\n' +
+            '  alert(name);\n' +
+            '}\n' +
+            '\n' +
+            'setTimeout(function() {\n' +
+            '  let name = "Петя";\n' +
+            '  sayHi();\n' +
+            '}, 1000);',76,77,6,7,null,null,null,76);
     };
     insertValue(tableName,...values){
         let me = this;
-        console.log(values);
         values.unshift(null);
         let placeholders = values.map((value) => '?').join(',');
         me.db.serialize(function() {
             let stmt = me.db.prepare('INSERT INTO '+ tableName +' VALUES (' + placeholders + ')');
             stmt.run(values, function (err) {
                 if (err) return console.log(err.message);
-                console.log('Success insert into \''+ tableName + '\'');
+                console.log(this);
             });
 
         });
     };
 
-
     returnAllDataFromTable(table){
-        console.log('returnAllDataFromTable');
         let me = this;
         me.db.each('SELECT * FROM ' + table, function(err, row) {
             console.log(row);
         });
     };
 
-    getTest(){
-        console.log('getTest');
-        let me = this;
-        me.db.each('SELECT * FROM questions', function(err, row) {
-            return ;
-        });
-    }
-
-    serializeDB(){
-        let me = this;
+    getTest(userId){
+        //console.log('getTest');
+        let me = this, arrId = [];
         me.db.serialize(function() {
+            let stmt = me.db.prepare('SELECT idQuest FROM results where idUser = ' + userId);
+            stmt.all(function (err,rows) {
+                if (err) return console.log(err.message);
 
-            me.db.run('Create TABLE lorem (info TEXT)');
-            let stmt = me.db.prepare('INSERT INTO lorem VALUES (?)');
-
-            for (let i = 0; i < 10; i++) {
-                stmt.run('Ipsum ' + i);
-            }
-
-            me.db.each('SELECT rowid AS id, info FROM lorem', function(err, row) {
-                console.log(row.id + ': ' + row.info);
+                console.log(rows);
             });
+
         });
+        // let t = me.db.exec('SELECT idQuest FROM results where idUser = ' + userId, (err, rows) => {
+        //         if (err) {
+        //             return console.error(err.message);
+        //         }
+        //         let arr = [];
+        //         for (let key in rows) {
+        //             arr.push(rows[key]);
+        //         }
+        //         console.log(this);
+        //     });
+        // let randomId = null;
+        // while(true)
+        // {
+        //     randomId = me.getRandomInt(1,15);
+        //     if(!arrId.includes(randomId)) break
+        // }
+        // //console.log(randomId);
+        // var test = [];
+        // me.db.serialize(function() {
+        //     me.db.exec('SELECT * FROM questions where idQuest = ' + randomId,
+        //         function (err, row) {
+        //             let arr = [];
+        //             for (let key in row) {
+        //                 arr.push(row[key]);
+        //             }
+        //             test = arr;
+        //
+        //         })
+        // });
+        // //console.log(test);
+        // return test;
     };
 
-    calcResult(userId){
-        let me = this;
-        me.db.each('SELECT questions.idQuest, questions.idAnswer, results.idAnswer as userAnswer from results join questions on questions.idQuest = results.idQuest where idUser = ' + userId, function(err, row) {
-            console.log(row);
-        });
+
+    getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
     }
+
+    resetTestCount(userId){
+        let me = this;
+        me.db.run('update users set countFinishTests = 0 where idUser = ' + userId)
+    }
+    // calcResult(userId){
+    //     let me = this;
+    //     me.db.each('SELECT questions.idQuest, questions.idAnswer, results.idAnswer as userAnswer from results join questions on questions.idQuest = results.idQuest where idUser = ' + userId, function(err, row) {
+    //         console.log(row);
+    //     });
+    // }
 
     nextTest() {
         console.log('nextTest');
@@ -188,6 +348,7 @@ class DataBase{
 }
 
 let db = new DataBase();
+
 
 exports = module.exports;
 exports.DataBase = DataBase;
