@@ -3,12 +3,17 @@
 class DataBase{
     constructor(){
         let me = this;
+        let sqliteSync = require('sqlite-sync');
+        me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite.sqlite','OPEN_READWRITE');
-        //me.initializationTables();
-        //me.initDataAnswers(me);
-
-         //me.initDataQuestions(me);
+        // console.log(me.db);
+        // me.arr = [];
+        //me.db.arrTest = [];
+        // me.initializationTables();
+        // me.initDataAnswers(me);
+        //
+        //  me.initDataQuestions(me);
 
         //me.insertValue('answers','string');
         //me.initDataQuestions(me);
@@ -24,9 +29,10 @@ class DataBase{
 
 
         // console.log(me.getTest(1));
-        //this.insertValue('results',1,3,15);
+        //this.insertValue('results',1,43,15);
 
-        //me.returnAllDataFromTable('answers');
+
+        //me.returnAllDataFromTable('results');
 
         // me.resetTestCount(1);
         // me.returnAllDataFromTable('users');
@@ -254,10 +260,9 @@ class DataBase{
         values.unshift(null);
         let placeholders = values.map((value) => '?').join(',');
         me.db.serialize(function() {
-            let stmt = me.db.prepare('INSERT INTO '+ tableName +' VALUES (' + placeholders + ')');
+            let stmt = me.db.prepare('INSERT INTO ' + tableName + ' VALUES (' + placeholders + ')');
             stmt.run(values, function (err) {
                 if (err) return console.log(err.message);
-                console.log(this);
             });
 
         });
@@ -273,46 +278,29 @@ class DataBase{
     getTest(userId){
         //console.log('getTest');
         let me = this, arrId = [];
-        me.db.serialize(function() {
-            let stmt = me.db.prepare('SELECT idQuest FROM results where idUser = ' + userId);
-            stmt.all(function (err,rows) {
-                if (err) return console.log(err.message);
+        let results = me.dbSync.run('SELECT idResult FROM results where idUser = ' + userId);
 
-                console.log(rows);
-            });
+        for(let result in results){
+            for (let key in result) {
+                arrId.push(result[key]);
+            }
+        }
+        console.log(arrId);
 
-        });
-        // let t = me.db.exec('SELECT idQuest FROM results where idUser = ' + userId, (err, rows) => {
-        //         if (err) {
-        //             return console.error(err.message);
-        //         }
-        //         let arr = [];
-        //         for (let key in rows) {
-        //             arr.push(rows[key]);
-        //         }
-        //         console.log(this);
-        //     });
-        // let randomId = null;
-        // while(true)
-        // {
-        //     randomId = me.getRandomInt(1,15);
-        //     if(!arrId.includes(randomId)) break
-        // }
-        // //console.log(randomId);
-        // var test = [];
-        // me.db.serialize(function() {
-        //     me.db.exec('SELECT * FROM questions where idQuest = ' + randomId,
-        //         function (err, row) {
-        //             let arr = [];
-        //             for (let key in row) {
-        //                 arr.push(row[key]);
-        //             }
-        //             test = arr;
-        //
-        //         })
-        // });
-        // //console.log(test);
-        // return test;
+        let randomId = null;
+        while(true)
+        {
+            randomId = me.getRandomInt(1,15);
+            if(!arrId.includes(randomId)) break;
+        }
+        console.log(randomId);
+        let test = [];
+        results =  me.dbSync.run('SELECT * FROM questions where idQuest = ' + randomId)[0];
+        for (let key in results) {
+            test.push(results[key]);
+        }
+        console.log(test);
+        return test;
     };
 
 
