@@ -11,7 +11,7 @@ const app = express(),
 
 const db = new DataBase();
 
-db.initialization();
+db.initializationTables();
 
 const jsonParser = bodyP.json();
 console.log(jsonParser);
@@ -43,21 +43,40 @@ app.post('/',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
 
-    db.insertValue('users',DBdata.firstName,DBdata.secName, null);
-    db.returnAllDataFromTable('users');
+    db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
 
-    db.nextTest();
+    let result = db.getTest(db.returnUserId(DBdata.firstName,DBdata.secName));
+    console.log(result);
+    let answerArr = [];
 
-    res.render('page1',{data:DBdata});
+    answerArr.push(db.returnAnswerById(result.idAnswer1));
+    answerArr.push(db.returnAnswerById(result.idAnswer2));
+    answerArr.push(db.returnAnswerById(result.idAnswer3));
+    answerArr.push(db.returnAnswerById(result.idAnswer4));
+    answerArr.push(db.returnAnswerById(result.idAnswer5));
+    answerArr.push(db.returnAnswerById(result.idAnswer6));
+    answerArr.push(db.returnAnswerById(result.idAnswer7));
+
+    let test = {};
+    test.idQuest = result.idQuest;
+    test.content1 = result.content1;
+    test.content2 = result.content2;
+    test.firstName  = req.body.firstName;
+    test.secName  = req.body.secondName;
+    test.countFinishTests  = result.countFinishTests;
+    test.answers = answerArr;
+    console.log(test);
+    res.render('testpage',{testData:test});
 });
 
 
 app.post('/next',urlencodedP,function (req,res) {
     if(!req.body) return res.sendStatus(400);
-    console.log(req.body);
     let data = {firstName:req.body.firstName, secName:req.body.secondName};
-    db.insertValue('users',data.firstName,data.secName, null);
+    //db.insertValue('users',data.firstName,data.secName, null);
+
     db.returnAllDataFromTable('users');
+
     console.log('Arguments: ' + req.body.firstName + '1 ' +  req.body.secondName + '1 ');
     res.render('testpage',{data:data});
 });

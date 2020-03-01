@@ -5,17 +5,29 @@
     <title>Page 1</title>
     <link rel="shortcut icon" href="#">
 </head>
+<script>
+    function activate(){
+        let inp = document.getElementById('r');
+        for (let i = 0; i < inp.length; i++) {
+            if (inp[i].type === "radio" && inp[i].checked) {
+                document.getElementsByTagName('next').disabled = false;
+            }
+        }
+    };
+</script>
 <body>
-<p>Тест</p><%=data.testNum%><br>
+<p>Тест <%=testData.countFinishTests + 1%></p><br>
 <fieldset>
-    <legend><%= data.userQuestion%></legend>
-    <input type="radio" required name="answer1" id="r1"><label for="r1"><%= data.answer[0]%></label>
-    <input type="radio" required name="answer2" id="r2"><label for="r2"><%= data.answer[0]%></label>
-    <input type="radio" required name="answer3" id="r3"><label for="r2"><%= data.answer[0]%></label>
-    <input type="radio" required name="answer4" id="r4"><label for="r2"><%= data.answer[0]%></label>
+    <legend><%=testData.content1%></legend>
+    <input type="radio" required name="answer1" id="r1"><label for="r1"><%= testData.answers[0]%></label><br>
+    <input type="radio" required name="answer2" id="r2"><label for="r2"><%= testData.answers[1]%></label><br>
+    <input type="radio" required name="answer3" id="r3"><label for="r3"><%= testData.answers[2]%></label><br>
+    <input type="radio" required name="answer4" id="r4"><label for="r4"><%= testData.answers[3]%></label><br>
+    <input type="radio" required name="answer5" id="r5"><label for="r5"><%= testData.answers[4]%></label><br>
+    <input type="radio" required name="answer6" id="r6"><label for="r6"><%= testData.answers[5]%></label>
 </fieldset>
 <form action="#" method="post">
-    <button type="submit"><%=data.buttName%></button>
+    <button id = "next" type="submit"  disabled = "disabled">Продолжить</button>
 </form>
 </body>
 </html>

@@ -7,38 +7,7 @@ class DataBase{
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite.sqlite','OPEN_READWRITE');
-        // console.log(me.db);
-        // me.arr = [];
-        //me.db.arrTest = [];
-        // me.initializationTables();
-        // me.initDataAnswers(me);
-        //
-        //  me.initDataQuestions(me);
-
-        //me.insertValue('answers','string');
-        //me.initDataQuestions(me);
-        // me.db.each('SELECT content1,content2,content as answerContent FROM questions join answers on questions.idRightAnswer = answers.idAnswer',
-        //     function(err, row) {
-        //     console.log(row);
-        // });
-        // me.db.each('SELECT content FROM questions join answers on questions.idAnswer1 = answers.idAnswer where idQuest = 1',
-        //     function(err, row) {
-        //         console.log(row);
-        // });
-        //this.insertValue('users','fName','secName',0,null);
-
-
-        // console.log(me.getTest(1));
-        //this.insertValue('results',1,43,15);
-
-
-        //me.returnAllDataFromTable('results');
-
-        // me.resetTestCount(1);
-        // me.returnAllDataFromTable('users');
-        //console.log(typeof test);
-        me.getTest(1);
-        //console.log(test);
+        //me.returnAllDataFromTable('users');
     };
 
 
@@ -83,7 +52,7 @@ class DataBase{
                 ' where idUser = NEW.idUser;\n' +
                 ' END');
 
-            console.log('Create TABLE users');
+            //console.log('Create TABLE users');
         });
 
     };
@@ -267,6 +236,14 @@ class DataBase{
 
         });
     };
+    returnUserId(fName,secName) {
+        console.log('returnUserId');
+        let me = this;
+        let results = me.dbSync.run(`SELECT idUser FROM users where fName = '${fName}' and sName = '${secName}'`)[0];
+
+        console.log(results.idUser);
+        return results.idUser;
+    }
 
     returnAllDataFromTable(table){
         let me = this;
@@ -276,7 +253,6 @@ class DataBase{
     };
 
     getTest(userId){
-        //console.log('getTest');
         let me = this, arrId = [];
         let results = me.dbSync.run('SELECT idResult FROM results where idUser = ' + userId);
 
@@ -285,7 +261,7 @@ class DataBase{
                 arrId.push(result[key]);
             }
         }
-        console.log(arrId);
+        //console.log(arrId);
 
         let randomId = null;
         while(true)
@@ -294,15 +270,19 @@ class DataBase{
             if(!arrId.includes(randomId)) break;
         }
         console.log(randomId);
-        let test = [];
-        results =  me.dbSync.run('SELECT * FROM questions where idQuest = ' + randomId)[0];
-        for (let key in results) {
-            test.push(results[key]);
-        }
+        let test =  me.dbSync.run('SELECT * FROM questions where idQuest = ' + randomId)[0];
+        let userCountTests =  me.dbSync.run('SELECT countFinishTests FROM users where idUser = ' + userId)[0];
+        test.countFinishTests = userCountTests.countFinishTests;
         console.log(test);
         return test;
     };
-
+    returnAnswerById(idAnswer){
+        let me  = this;
+        if(idAnswer === null) return null;
+        let answer =  me.dbSync.run('SELECT content FROM answers where idAnswer = ' + idAnswer)[0];
+        console.log(answer.content);
+        return answer.content;
+    }
 
     getRandomInt(min, max) {
         min = Math.ceil(min);
@@ -334,9 +314,6 @@ class DataBase{
       this.db.close();
     };
 }
-
-let db = new DataBase();
-
 
 exports = module.exports;
 exports.DataBase = DataBase;
