@@ -7,7 +7,7 @@ class DataBase{
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite.sqlite','OPEN_READWRITE');
-        //me.returnAllDataFromTable('users');
+
     };
 
 
@@ -236,13 +236,20 @@ class DataBase{
 
         });
     };
+
+    removeDataFromTable(tableName){
+        console.log('removeDataFromTable ' + tableName );
+        this.dbSync.run('delete from ' +tableName);
+    }
     returnUserId(fName,secName) {
         console.log('returnUserId');
         let me = this;
-        let results = me.dbSync.run(`SELECT idUser FROM users where fName = '${fName}' and sName = '${secName}'`)[0];
-
-        console.log(results.idUser);
-        return results.idUser;
+        let results = me.dbSync.run(`SELECT idUser FROM users where fName = '${fName}' and sName = '${secName}'`);
+        if(results.length!==0) {
+            console.log(results[0].idUser);
+            return results[0].idUser;
+        }
+        else return null;
     }
 
     returnAllDataFromTable(table){
@@ -252,24 +259,36 @@ class DataBase{
         });
     };
 
+    userExist(fName,sName){
+
+    }
+
     getTest(userId){
-        let me = this, arrId = [];
-        let results = me.dbSync.run('SELECT idResult FROM results where idUser = ' + userId);
-
-        for(let result in results){
-            for (let key in result) {
-                arrId.push(result[key]);
-            }
-        }
-        //console.log(arrId);
-
-        let randomId = null;
-        while(true)
+        console.log('getTest');
+        let me = this, arrId = [], randomId = null;
+        let results = me.dbSync.run(`SELECT idResult FROM results where idUser =  '${userId}' and idAnswer IS NULL`);
+        if(results.length === 0)
         {
-            randomId = me.getRandomInt(1,15);
-            if(!arrId.includes(randomId)) break;
+            console.log('results.length === 0');
+            for(let result in results){
+                for (let key in result) {
+                    arrId.push(result[key]);
+                }
+            }
+
+            while(true)
+            {
+                randomId = me.getRandomInt(1,15);
+                if(!arrId.includes(randomId)) break;
+            }
+            console.log(randomId);
         }
-        console.log(randomId);
+        else{
+            console.log(results);
+            randomId = results[0].idResult;
+        }
+
+
         let test =  me.dbSync.run('SELECT * FROM questions where idQuest = ' + randomId)[0];
         let userCountTests =  me.dbSync.run('SELECT countFinishTests FROM users where idUser = ' + userId)[0];
         test.countFinishTests = userCountTests.countFinishTests;
@@ -277,10 +296,11 @@ class DataBase{
         return test;
     };
     returnAnswerById(idAnswer){
+        console.log('returnAnswerById');
         let me  = this;
         if(idAnswer === null) return null;
         let answer =  me.dbSync.run('SELECT content FROM answers where idAnswer = ' + idAnswer)[0];
-        console.log(answer.content);
+        // console.log(answer.content);
         return answer.content;
     }
 

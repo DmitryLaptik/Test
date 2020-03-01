@@ -42,10 +42,12 @@ app.get('/page/:id', (req, res) => {
 app.post('/',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
+    let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
 
-    db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
+    if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
 
-    let result = db.getTest(db.returnUserId(DBdata.firstName,DBdata.secName));
+    let userId = db.returnUserId(DBdata.firstName,DBdata.secName);
+    let result = db.getTest(userId);
     console.log(result);
     let answerArr = [];
 
@@ -65,6 +67,11 @@ app.post('/',urlencodedP,function (req,res) {//регистрация
     test.secName  = req.body.secondName;
     test.countFinishTests  = result.countFinishTests;
     test.answers = answerArr;
+
+    db.insertValue('results', userId, test.idQuest, null);
+
+
+
     console.log(test);
     res.render('testpage',{testData:test});
 });
