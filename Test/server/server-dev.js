@@ -35,11 +35,49 @@ app.get('/reg', (req, res) => {
     res.sendFile(PROJ_DIR + 'html/registryPage.html');
 });
 
+
 app.get('/page/:id', (req, res) => {
     res.sendFile(PROJ_DIR + 'html/page' + req.params.id +'.html');
 });
 
-app.post('/',urlencodedP,function (req,res) {//регистрация
+
+// app.post('/test',(req, res) => {
+//     if(!req.body) return res.sendStatus(400);
+//     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
+//     let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
+//
+//     if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
+//
+//     let userId = db.returnUserId(DBdata.firstName,DBdata.secName);
+//     let result = db.getTest(userId);
+//     console.log(result);
+//     let answerArr = [];
+//
+//     answerArr.push(db.returnAnswerById(result.idAnswer1));
+//     answerArr.push(db.returnAnswerById(result.idAnswer2));
+//     answerArr.push(db.returnAnswerById(result.idAnswer3));
+//     answerArr.push(db.returnAnswerById(result.idAnswer4));
+//     answerArr.push(db.returnAnswerById(result.idAnswer5));
+//     answerArr.push(db.returnAnswerById(result.idAnswer6));
+//     answerArr.push(db.returnAnswerById(result.idAnswer7));
+//
+//     let test = {};
+//     test.idQuest = result.idQuest;
+//     test.content1 = result.content1;
+//     test.content2 = result.content2;
+//     test.firstName  = req.body.firstName;
+//     test.secName  = req.body.secondName;
+//     test.countFinishTests  = result.countFinishTests;
+//     test.answers = answerArr;
+//
+//     db.insertValue('results', userId, test.idQuest, null);
+//
+//     console.log(test);
+//     res.render('testpage',{testData:test});
+// });
+//
+
+app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
     let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
@@ -48,8 +86,8 @@ app.post('/',urlencodedP,function (req,res) {//регистрация
 
     let userId = db.returnUserId(DBdata.firstName,DBdata.secName);
     let result = db.getTest(userId);
-    console.log(result);
     let answerArr = [];
+
 
     answerArr.push(db.returnAnswerById(result.idAnswer1));
     answerArr.push(db.returnAnswerById(result.idAnswer2));
@@ -59,20 +97,19 @@ app.post('/',urlencodedP,function (req,res) {//регистрация
     answerArr.push(db.returnAnswerById(result.idAnswer6));
     answerArr.push(db.returnAnswerById(result.idAnswer7));
 
+    let isNewResult = db.checkResult(userId, result.idQuest);
+
+    if(isNewResult) db.insertValue('results', userId, result.idQuest, null);
+
     let test = {};
     test.idQuest = result.idQuest;
     test.content1 = result.content1;
     test.content2 = result.content2;
     test.firstName  = req.body.firstName;
     test.secName  = req.body.secondName;
-    test.countFinishTests  = result.countFinishTests;
+
     test.answers = answerArr;
-
-    db.insertValue('results', userId, test.idQuest, null);
-
-
-
-    console.log(test);
+    test.countFinishTests  = db.returnTestCount(userId);
     res.render('testpage',{testData:test});
 });
 
@@ -82,8 +119,6 @@ app.post('/next',urlencodedP,function (req,res) {
     let data = {firstName:req.body.firstName, secName:req.body.secondName};
     //db.insertValue('users',data.firstName,data.secName, null);
 
-    db.returnAllDataFromTable('users');
-
-    console.log('Arguments: ' + req.body.firstName + '1 ' +  req.body.secondName + '1 ');
+    db.showAllDataFromTable('users');
     res.render('testpage',{data:data});
 });

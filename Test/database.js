@@ -6,7 +6,7 @@ class DataBase{
         let sqliteSync = require('sqlite-sync');
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         let sqlite3 = require('sqlite3').verbose();
-        me.db = new sqlite3.Database('dbsqlite.sqlite','OPEN_READWRITE');
+        me.db = new sqlite3.Database('dbsqlite.sqlite','SQLITE_OPEN_FULLMUTEX');
 
     };
 
@@ -228,13 +228,7 @@ class DataBase{
         let me = this;
         values.unshift(null);
         let placeholders = values.map((value) => '?').join(',');
-        me.db.serialize(function() {
-            let stmt = me.db.prepare('INSERT INTO ' + tableName + ' VALUES (' + placeholders + ')');
-            stmt.run(values, function (err) {
-                if (err) return console.log(err.message);
-            });
-
-        });
+        var last_insert_id = me.dbSync.run(`INSERT INTO ${tableName} VALUES (${placeholders})`,values);
     };
 
     removeDataFromTable(tableName){
@@ -252,11 +246,10 @@ class DataBase{
         else return null;
     }
 
-    returnAllDataFromTable(table){
+    showAllDataFromTable(table){
         let me = this;
-        me.db.each('SELECT * FROM ' + table, function(err, row) {
-            console.log(row);
-        });
+        let result = me.dbSync.run('SELECT * FROM ' + table);
+        console.log(result)
     };
 
     userExist(fName,sName){
@@ -266,7 +259,7 @@ class DataBase{
     getTest(userId){
         console.log('getTest');
         let me = this, arrId = [], randomId = null;
-        let results = me.dbSync.run(`SELECT idResult FROM results where idUser =  '${userId}' and idAnswer IS NULL`);
+        let results = me.dbSync.run(`SELECT idResult, idQuest FROM results where idUser =  '${userId}' and idAnswer IS NULL`);
         if(results.length === 0)
         {
             console.log('results.length === 0');
@@ -285,13 +278,11 @@ class DataBase{
         }
         else{
             console.log(results);
-            randomId = results[0].idResult;
+            randomId = results[0].idQuest;
         }
 
 
         let test =  me.dbSync.run('SELECT * FROM questions where idQuest = ' + randomId)[0];
-        let userCountTests =  me.dbSync.run('SELECT countFinishTests FROM users where idUser = ' + userId)[0];
-        test.countFinishTests = userCountTests.countFinishTests;
         console.log(test);
         return test;
     };
@@ -304,10 +295,23 @@ class DataBase{
         return answer.content;
     }
 
+
+    checkResult(userId,questId){
+        let me = this;
+        let answer =  me.dbSync.run(`SELECT idAnswer FROM results where idUser = ${userId} and idQuest = ${questId}`)[0];
+        if(answer) return false;
+        else return true;
+    }
+
     getRandomInt(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
+    }
+
+    returnTestCount(userId){
+        return  this.dbSync.run(`SELECT countFinishTests FROM users where idUser = ${userId} `)[0].countFinishTests;
+
     }
 
     resetTestCount(userId){
@@ -336,4 +340,5 @@ class DataBase{
 }
 
 exports = module.exports;
+
 exports.DataBase = DataBase;
