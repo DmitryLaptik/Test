@@ -79,15 +79,36 @@ app.get('/page/:id', (req, res) => {
 
 app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
-    let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
-    let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
+    let DBdata = null,  isExist = false, userId, result;
 
-    if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
+    if(req.body.firstName && req.body.secondName) {
+        DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
+        let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
+        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
+        userId = db.returnUserId(DBdata.firstName,DBdata.secName);
 
-    let userId = db.returnUserId(DBdata.firstName,DBdata.secName);
-    let result = db.getTest(userId);
+    }
+    else{
+        console.log(req.body);
+        userId = req.body.idUser;
+    }
+    if(req.body.answer){
+        let arrId = req.body.answersIds.split(',');
+        db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
+    }
+
+    result = db.getTest(userId);
+    let answerIdArr = [];
+
+    answerIdArr.push(result.idAnswer1);
+    answerIdArr.push(result.idAnswer2);
+    answerIdArr.push(result.idAnswer3);
+    answerIdArr.push(result.idAnswer4);
+    answerIdArr.push(result.idAnswer5);
+    answerIdArr.push(result.idAnswer6);
+    answerIdArr.push(result.idAnswer7);
+
     let answerArr = [];
-
 
     answerArr.push(db.returnAnswerById(result.idAnswer1));
     answerArr.push(db.returnAnswerById(result.idAnswer2));
@@ -97,6 +118,8 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     answerArr.push(db.returnAnswerById(result.idAnswer6));
     answerArr.push(db.returnAnswerById(result.idAnswer7));
 
+
+
     let isNewResult = db.checkResult(userId, result.idQuest);
 
     if(isNewResult) db.insertValue('results', userId, result.idQuest, null);
@@ -105,10 +128,10 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     test.idQuest = result.idQuest;
     test.content1 = result.content1;
     test.content2 = result.content2;
-    test.firstName  = req.body.firstName;
-    test.secName  = req.body.secondName;
+    test.userId = userId;
 
     test.answers = answerArr;
+    test.answersIds = answerIdArr;
     test.countFinishTests  = db.returnTestCount(userId);
     res.render('testpage',{testData:test});
 });

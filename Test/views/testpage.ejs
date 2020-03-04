@@ -7,26 +7,38 @@
 </head>
 <script>
     function activate(){
-        let inp = document.getElementById('r');
+        let inp = document.getElementsByName('answer');
         for (let i = 0; i < inp.length; i++) {
             if (inp[i].type === "radio" && inp[i].checked) {
-                document.getElementsByTagName('next').disabled = false;
+                document.getElementById('next').disabled = false;
             }
         }
     };
+    function setAnswer(input) {
+        for(let i = 1; i <=6;i++){
+            let el = document.getElementById('r' + i);
+            if(el.id !== input.id) el.value = "off";
+            else input.value = i-1;
+
+        }
+    }
 </script>
 <body>
 <p>Тест <%=testData.countFinishTests%></p><br>
-<fieldset>
-    <legend><%=testData.content1%></legend>
-    <input type="radio" required name="answer1" id="r1"><label for="r1"><%= testData.answers[0]%></label><br>
-    <input type="radio" required name="answer2" id="r2"><label for="r2"><%= testData.answers[1]%></label><br>
-    <input type="radio" required name="answer3" id="r3"><label for="r3"><%= testData.answers[2]%></label><br>
-    <input type="radio" required name="answer4" id="r4"><label for="r4"><%= testData.answers[3]%></label><br>
-    <input type="radio" required name="answer5" id="r5"><label for="r5"><%= testData.answers[4]%></label><br>
-    <input type="radio" required name="answer6" id="r6"><label for="r6"><%= testData.answers[5]%></label>
-</fieldset>
 <form action="#" method="post">
+<fieldset onclick="activate()">
+    <legend><%=testData.content1%></legend>
+    <input type = "hidden" name = "idUser" value = <%= testData.userId%>>
+    <input type = "hidden" name = "idQuest" value = <%= testData.idQuest%>>
+    <input type = "hidden" name = "answersIds" value = <%= testData.answersIds%>>
+    <input type="radio" required name="answer" id="r1" onclick="setAnswer(this)"><%= testData.answers[0]%><br>
+    <input type="radio" required name="answer" id="r2" onclick="setAnswer(this)"><%= testData.answers[1]%><br>
+    <input type="radio" required name="answer" id="r3" onclick="setAnswer(this)"><%= testData.answers[2]%><br>
+    <input type="radio" required name="answer" id="r4" onclick="setAnswer(this)"><%= testData.answers[3]%><br>
+    <input type="radio" required name="answer" id="r5" onclick="setAnswer(this)"><%= testData.answers[4]%><br>
+    <input type="radio" required name="answer" id="r6" onclick="setAnswer(this)"><%= testData.answers[5]%>
+</fieldset>
+
     <button id = "next" type="submit"  disabled = "disabled">Продолжить</button>
 </form>
 </body>
