@@ -255,10 +255,6 @@ class DataBase{
         console.log(result)
     };
 
-    userExist(fName,sName){
-
-    }
-
     getTest(userId){
 
         let me = this, arrId = [], randomId = null;
@@ -269,7 +265,7 @@ class DataBase{
             for(let i = 0; i <results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
                 while(true) {
-                    randomId = me.getRandomInt(1,15);
+                    randomId = me.getRandomInt(1,16);
                     if(!arrId.includes(randomId)) break;
                 }
             }
@@ -330,11 +326,27 @@ class DataBase{
         me.db.run('Drop TABLE '+table);
     };
 
+    calcUserResult(userId){
+        let me = this;
+
+        let count = me.dbSync.run(`SELECT count (idResult) from results join questions on questions.idQuest 
+            = results.idQuest where results.idAnswer = questions.idRightAnswer and idUser = ${userId}`);
+        console.log(me.dbSync.run(`SELECT * from results join questions on questions.idQuest = results.idQuest 
+        where results.idAnswer = questions.idRightAnswer and idUser = ${userId}`));
+        console.log(me.dbSync.run(`SELECT count (idResult) from results join questions on questions.idQuest = results.idQuest 
+        where idUser = ${userId}`));
+        console.log(count);
+    }
+
     DBClose(){
       this.db.close();
     };
 }
 
+
+let db = new DataBase();
+
+db.calcUserResult(62);
 exports = module.exports;
 
 exports.DataBase = DataBase;

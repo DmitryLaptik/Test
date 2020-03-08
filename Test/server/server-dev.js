@@ -86,54 +86,65 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
         if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
         userId = db.returnUserId(DBdata.firstName,DBdata.secName);
-
     }
     else{
         console.log(req.body);
         userId = req.body.idUser;
     }
-    if(req.body.answer){
-        let arrId = req.body.answersIds.split(',');
-        db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
+
+    let countFinishTests  = db.returnTestCount(userId);
+    if(countFinishTests === 15){
+        res.render('testpage', {testData: test});
     }
+    else {
+        if (req.body.answer) {
+            let arrId = req.body.answersIds.split(',');
+            db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
+        }
 
-    result = db.getTest(userId);
-    let answerIdArr = [];
+        result = db.getTest(userId);
+        let answerIdArr = [];
 
-    answerIdArr.push(result.idAnswer1);
-    answerIdArr.push(result.idAnswer2);
-    answerIdArr.push(result.idAnswer3);
-    answerIdArr.push(result.idAnswer4);
-    answerIdArr.push(result.idAnswer5);
-    answerIdArr.push(result.idAnswer6);
-    answerIdArr.push(result.idAnswer7);
+        answerIdArr.push(result.idAnswer1);
+        answerIdArr.push(result.idAnswer2);
+        answerIdArr.push(result.idAnswer3);
+        answerIdArr.push(result.idAnswer4);
+        answerIdArr.push(result.idAnswer5);
+        answerIdArr.push(result.idAnswer6);
+        answerIdArr.push(result.idAnswer7);
 
-    let answerArr = [];
+        let answerArr = [];
 
-    answerArr.push(db.returnAnswerById(result.idAnswer1));
-    answerArr.push(db.returnAnswerById(result.idAnswer2));
-    answerArr.push(db.returnAnswerById(result.idAnswer3));
-    answerArr.push(db.returnAnswerById(result.idAnswer4));
-    answerArr.push(db.returnAnswerById(result.idAnswer5));
-    answerArr.push(db.returnAnswerById(result.idAnswer6));
-    answerArr.push(db.returnAnswerById(result.idAnswer7));
+        answerArr.push(db.returnAnswerById(result.idAnswer1));
+        answerArr.push(db.returnAnswerById(result.idAnswer2));
+        answerArr.push(db.returnAnswerById(result.idAnswer3));
+        answerArr.push(db.returnAnswerById(result.idAnswer4));
+        answerArr.push(db.returnAnswerById(result.idAnswer5));
+        answerArr.push(db.returnAnswerById(result.idAnswer6));
+        answerArr.push(db.returnAnswerById(result.idAnswer7));
 
+        answerArr = answerArr.filter(function (el) {
+            return el != null;
+        });
+        answerIdArr = answerIdArr.filter(function (el) {
+            return el != null;
+        });
 
+        let isNewResult = db.checkResult(userId, result.idQuest);
 
-    let isNewResult = db.checkResult(userId, result.idQuest);
+        if (isNewResult) db.insertValue('results', userId, result.idQuest, null);
 
-    if(isNewResult) db.insertValue('results', userId, result.idQuest, null);
+        let test = {};
+        test.idQuest = result.idQuest;
+        test.content1 = result.content1;
+        test.content2 = result.content2;
+        test.userId = userId;
 
-    let test = {};
-    test.idQuest = result.idQuest;
-    test.content1 = result.content1;
-    test.content2 = result.content2;
-    test.userId = userId;
-
-    test.answers = answerArr;
-    test.answersIds = answerIdArr;
-    test.countFinishTests  = db.returnTestCount(userId);
-    res.render('testpage',{testData:test});
+        test.answers = answerArr;
+        test.answersIds = answerIdArr;
+        test.countFinishTests = db.returnTestCount(userId);
+        res.render('testpage', {testData: test});
+    }
 });
 
 
