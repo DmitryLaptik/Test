@@ -330,12 +330,14 @@ class DataBase{
         let me = this;
 
         let count = me.dbSync.run(`SELECT count (idResult) from results join questions on questions.idQuest 
-            = results.idQuest where results.idAnswer = questions.idRightAnswer and idUser = ${userId}`);
+            = results.idQuest where results.idAnswer = questions.idRightAnswer and idUser = ${userId}`)[0];
         console.log(me.dbSync.run(`SELECT * from results join questions on questions.idQuest = results.idQuest 
         where results.idAnswer = questions.idRightAnswer and idUser = ${userId}`));
-        console.log(me.dbSync.run(`SELECT count (idResult) from results join questions on questions.idQuest = results.idQuest 
-        where idUser = ${userId}`));
-        console.log(count);
+        let countAllQuestions = me.dbSync.run(`SELECT count (idResult) from results join questions on questions.idQuest = results.idQuest 
+        where idUser = ${userId}`)[0];
+        console.log(count['count (idResult)']);
+        console.log(countAllQuestions['count (idResult)']);
+        return count['count (idResult)']/countAllQuestions['count (idResult)'] * 100;
     }
 
     DBClose(){
@@ -346,7 +348,7 @@ class DataBase{
 
 let db = new DataBase();
 
-db.calcUserResult(62);
+db.showAllDataFromTable('users');
 exports = module.exports;
 
 exports.DataBase = DataBase;
