@@ -96,6 +96,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(countFinishTests === 15){
         let result = db.calcUserResult(userId);
         let data = {};
+        db.resetTestCount(userId, result);
         data.result =  result.toFixed(1).toString();
         res.render('resultpage', {data:data});
     }
@@ -160,7 +161,6 @@ app.post('/next',urlencodedP,function (req,res) {
     res.render('testpage',{data:data});
 });
 
-app.get('/back',urlencodedP,function (req,res) {
-    if(!req.body) return res.sendStatus(400);
+app.get('/back', (req,res) => {
     res.sendFile(PROJ_DIR + 'html/MainPage.html');
 });

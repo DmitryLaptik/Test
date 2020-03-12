@@ -306,16 +306,10 @@ class DataBase{
 
     }
 
-    resetTestCount(userId){
+    resetTestCount(userId, mark){
         let me = this;
-        me.db.run('update users set countFinishTests = 0 where idUser = ' + userId)
+        me.db.run(`update users set countFinishTests = 0, mark ${mark} where idUser = ${userId}`)
     }
-    // calcResult(userId){
-    //     let me = this;
-    //     me.db.each('SELECT questions.idQuest, questions.idAnswer, results.idAnswer as userAnswer from results join questions on questions.idQuest = results.idQuest where idUser = ' + userId, function(err, row) {
-    //         console.log(row);
-    //     });
-    // }
 
     nextTest() {
         console.log('nextTest');
@@ -329,15 +323,16 @@ class DataBase{
     calcUserResult(userId){
         let me = this;
 
-        let count = me.dbSync.run(`SELECT count (idResult) from results join questions on questions.idQuest 
-            = results.idQuest where results.idAnswer = questions.idRightAnswer and idUser = ${userId}`)[0];
-        console.log(me.dbSync.run(`SELECT * from results join questions on questions.idQuest = results.idQuest 
-        where results.idAnswer = questions.idRightAnswer and idUser = ${userId}`));
-        let countAllQuestions = me.dbSync.run(`SELECT count (idResult) from results join questions on questions.idQuest = results.idQuest 
-        where idUser = ${userId}`)[0];
-        console.log(count['count (idResult)']);
-        console.log(countAllQuestions['count (idResult)']);
-        return count['count (idResult)']/countAllQuestions['count (idResult)'] * 100;
+        let count = me.dbSync.run(`SELECT * from results, questions where questions.idQuest 
+            = results.idQuest and results.idAnswer = questions.idRightAnswer and idUser = ${userId} order by results.idResult desc limit 15`).length;
+        console.log(me.dbSync.run(`SELECT * from results, questions where questions.idQuest = results.idQuest 
+        and results.idAnswer = questions.idRightAnswer and idUser = ${userId} order by results.idResult desc limit 15`).length);
+        let countAllQuestions = me.dbSync.run(`SELECT * from results, questions where questions.idQuest = results.idQuest 
+        and idUser = ${userId} order by results.idResult desc limit 15`).length;
+        console.log(count);
+        console.log(countAllQuestions);
+
+        return count/countAllQuestions * 100;
     }
 
     DBClose(){
@@ -346,9 +341,9 @@ class DataBase{
 }
 
 
-let db = new DataBase();
-
-db.showAllDataFromTable('users');
+// let db = new DataBase();
+// //db.showAllDataFromTable('users');
+// db.calcUserResult(62);
 exports = module.exports;
 
 exports.DataBase = DataBase;

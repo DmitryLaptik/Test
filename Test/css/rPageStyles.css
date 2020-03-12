@@ -1,3 +1,5 @@
+body{ background-color: #caddda}
+
 #wrapper {
     background-color: blue;
     padding-left: 10%;
@@ -16,7 +18,11 @@
     margin: 0;
     position: relative;
     top: 5%;
-    left: 35%;
+    left: 20%;
+}
+button{
+    position: relative;
+    left: 13%;
 }
 #input_data *{
     margin-top: 9px;

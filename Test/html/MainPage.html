@@ -2,34 +2,21 @@
 <html lang="en"><head>
 <meta http-equiv="content-type" content="text/html">
     <meta charset="UTF-8">
+    <meta name = "viewport" content="width = device- width, initial-scale=1.0">
+    <meta http-equiv = "X-AU-Compatible" content="ie=edge">
     <title>OnlineTest</title>
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../css/rPageStyles.css">
-<!--    <script>-->
-<!--            var reload = "false";-->
-<!--            function reloaded(){-->
-<!--                reload = "true";-->
-<!--                console.log('Перезагружена')-->
-<!--            }; //страницу перезагрузили-->
-<!--            window.onload = function() {-->
-<!--                var loaded = sessionStorage.getItem('loaded');-->
-<!--                if(loaded) {-->
-<!--                    reloaded();-->
-<!--                } else {-->
-<!--                    sessionStorage.setItem('loaded', true);-->
-<!--                }-->
-<!--            }-->
-<!--            console.log(reload);-->
-<!--    </script>-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body>
 <div id="wrapper">
     <div id="registration_text">Регистрация</div>
 
     <div id="input_data">
-        <form id="firstName"  action="test" method="post">
-            <input type="text" name = "firstName" placeholder="Фамилия">
-            <input type="text" name = "secondName" placeholder="Имя">
+        <form  action="test" method="post">
+            <input type="text" name = "firstName" placeholder="Фамилия"><br>
+            <input type="text" name = "secondName" placeholder="Имя"><br>
             <button type="submit">Подтвердить</button>
         </form>
     </div>
