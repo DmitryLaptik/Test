@@ -79,6 +79,7 @@ app.get('/page/:id', (req, res) => {
 
 app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
+
     let DBdata = null,  isExist = false, userId, result;
 
     if(req.body.firstName && req.body.secondName) {
@@ -92,13 +93,15 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         userId = req.body.idUser;
     }
 
-    let countFinishTests  = db.returnTestCount(userId);
-    if(countFinishTests === 15){
+    let countFinishTests  = db.returnTestCount(Number(userId));
+    if(countFinishTests >= 15){
         let result = db.calcUserResult(userId);
         let data = {};
-        db.resetTestCount(userId, result);
+        let x = db.resetTestCount(userId, result.toFixed(1));
+        db.clearResultsUser(userId);
         data.result =  result.toFixed(1).toString();
         res.render('resultpage', {data:data});
+
     }
     else {
         if (req.body.answer) {
@@ -159,8 +162,4 @@ app.post('/next',urlencodedP,function (req,res) {
 
     db.showAllDataFromTable('users');
     res.render('testpage',{data:data});
-});
-
-app.get('/back', (req,res) => {
-    res.sendFile(PROJ_DIR + 'html/MainPage.html');
 });

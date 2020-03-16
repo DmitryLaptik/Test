@@ -40,17 +40,7 @@ class DataBase{
                 'idQuest Integer, ' +
                 'idAnswer Integer, ' +
                 'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
-                'FOREIGN KEY (idAnswer) REFERENCES answers(idAnswer) ON DELETE CASCADE ON UPDATE CASCADE ' +
                 'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
-
-            me.db.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
-                '   AFTER INSERT ON results ' +
-                'BEGIN\n' +
-                ' update users \n' +
-                ' set countFinishTests = countFinishTests + 1 \n' +
-                ' where idUser = NEW.idUser;\n' +
-                ' END');
-
             //console.log('Create TABLE users');
         });
 
@@ -251,10 +241,15 @@ class DataBase{
 
     showAllDataFromTable(table){
         let me = this;
-        let result = me.dbSync.run('SELECT * FROM ' + table);
+        let result = me.dbSync.run(`SELECT * FROM  ${table}`);
         console.log(result)
     };
 
+
+    clearTable(tableName){
+        let me = this;
+        me.dbSync.run(`DELETE FROM ${tableName}`);
+    }
     getTest(userId){
 
         let me = this, arrId = [], randomId = null;
@@ -308,7 +303,9 @@ class DataBase{
 
     resetTestCount(userId, mark){
         let me = this;
-        me.db.run(`update users set countFinishTests = 0, mark ${mark} where idUser = ${userId}`)
+        let result = me.dbSync.run(`update users set countFinishTests = 0, testMark = ${mark} where idUser = ${userId}`);
+        let user = me.dbSync.run(`select * from users where idUser = ${userId}`);
+        console.log(user);
     }
 
     nextTest() {
@@ -320,18 +317,16 @@ class DataBase{
         me.db.run('Drop TABLE '+table);
     };
 
+    clearResultsUser(userId){
+        let me = this;
+        me.dbSync.run(`delete from results where idUser = ${Number(userId)}`);
+    }
     calcUserResult(userId){
         let me = this;
-
         let count = me.dbSync.run(`SELECT * from results, questions where questions.idQuest 
             = results.idQuest and results.idAnswer = questions.idRightAnswer and idUser = ${userId} order by results.idResult desc limit 15`).length;
-        console.log(me.dbSync.run(`SELECT * from results, questions where questions.idQuest = results.idQuest 
-        and results.idAnswer = questions.idRightAnswer and idUser = ${userId} order by results.idResult desc limit 15`).length);
         let countAllQuestions = me.dbSync.run(`SELECT * from results, questions where questions.idQuest = results.idQuest 
         and idUser = ${userId} order by results.idResult desc limit 15`).length;
-        console.log(count);
-        console.log(countAllQuestions);
-
         return count/countAllQuestions * 100;
     }
 
@@ -340,10 +335,14 @@ class DataBase{
     };
 }
 
+//let db = new DataBase();
 
-// let db = new DataBase();
-// //db.showAllDataFromTable('users');
+//db.showAllDataFromTable('users');
+//db.clearResultsUser(74);
 // db.calcUserResult(62);
+//db.resetTestCount(80,33.3);
+//let result = db.dbSync.run(`SELECT * FROM users where idUser = 80`);
+//console.log(result)
 exports = module.exports;
 
 exports.DataBase = DataBase;
