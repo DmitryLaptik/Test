@@ -93,21 +93,23 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         userId = req.body.idUser;
     }
 
+    if (req.body.answer) {
+        let arrId = req.body.answersIds.split(',');
+        db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
+    }
     let countFinishTests  = db.returnTestCount(Number(userId));
     if(countFinishTests >= 15){
         let result = db.calcUserResult(userId);
         let data = {};
-        let x = db.resetTestCount(userId, result.toFixed(1));
-        db.clearResultsUser(userId);
+        //let x = db.resetTestCount(userId, result.toFixed(1));
+        //db.clearResultsUser(userId);
         data.result =  result.toFixed(1).toString();
+        data.questResults = db.returnQusetionByUserId(userId);
         res.render('resultpage', {data:data});
 
     }
     else {
-        if (req.body.answer) {
-            let arrId = req.body.answersIds.split(',');
-            db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
-        }
+
 
         result = db.getTest(userId);
         let answerIdArr = [];
