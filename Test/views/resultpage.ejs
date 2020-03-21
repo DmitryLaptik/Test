@@ -24,12 +24,7 @@
             <legend><%=data.questResults[i].content1%></legend>
             <pre><code><%=data.questResults[i].content2%></code></pre><br>
             <% for(let j = 0; j < data.questResults[i].arrAnswers.length; j++) {%>
-            <% let color = false%>
-            <% if(data.questResults[i].arrAnswers[j] == data.questResults[i].idRightAnswer)%>
-                <%{ color = true }%>
-                <% if(data.questResults[i].arrAnswers[j] !== data.questResults[i].idRightAnswer && data.questResults[i].idAnswer == data.questResults[i].arrAnswers[j])%>
-                <%{ color = false}%>
-            <input type="radio" required name="answer" style = "background-color: black" id="r<%= j+1%>" disabled = disabled><span style=" background-color: <% if (color) {%> red <%}else{%> blue <%}%>"><%= data.questResults[i].arrAnswers[j]%></span><br>
+                <input type="radio" required name="answer" id="r<%= j+1%>" disabled = disabled><span style = " background-color:<% if(data.questResults[i].answerIdArr[j] == data.questResults[i].idRightAnswer){%> darkseagreen<%}else if(data.questResults[i].idAnswer == data.questResults[i].answerIdArr[j]){%>red<%}%>"><%= data.questResults[i].arrAnswers[j]%></span><br>
             <%} %>
         </fieldset>
     <%} %>
