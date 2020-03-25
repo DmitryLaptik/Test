@@ -22,7 +22,7 @@ app.set('view engine','ejs');
 app.use(express.static(PROJ_DIR));
 
 app.get('/', (req, res) => {
-    res.sendFile(PROJ_DIR + 'html/MainPage.html')
+    res.sendFile(PROJ_DIR + 'views/MainPage.html')
 });
 
 const PORT = process.env.PORT || 8080;
@@ -31,16 +31,13 @@ app.listen(PORT, () => {
     console.log('Press Ctrl+C to quit.')
 });
 
-app.get('/reg', (req, res) => {
-    res.sendFile(PROJ_DIR + 'html/registryPage.html');
-});
-
-
 app.get('/page/:id', (req, res) => {
     res.sendFile(PROJ_DIR + 'html/page' + req.params.id +'.html');
 });
 
-
+app.post('/choose',(req, res) => {
+    res.sendFile(PROJ_DIR + 'views/chooseTest.html')
+});
 // app.post('/test',(req, res) => {
 //     if(!req.body) return res.sendStatus(400);
 //     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
@@ -83,9 +80,9 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     let DBdata = null,  isExist = false, userId, result;
 
     if(req.body.firstName && req.body.secondName) {
-        DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
+        DBdata = {firstName:req.body.firstName, secName:req.body.secondName,position:req.body.position};
         let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
-        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
+        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null, db.selectIdFromPositions(DBdata.position));
         userId = db.returnUserId(DBdata.firstName,DBdata.secName);
     }
     else{
@@ -101,17 +98,18 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(countFinishTests >= 15){
         let result = db.calcUserResult(userId);
         let data = {};
-        //let x = db.resetTestCount(userId, result.toFixed(1));
         //db.clearResultsUser(userId);
         data.result =  result.toFixed(1).toString();
         data.questResults = db.returnQusetionByUserId(userId);
+        db.updateUserMark(userId, result.toFixed(1));
+        db.resetTestCount(userId, result.toFixed(1));
         res.render('resultpage', {data:data});
-
     }
     else {
-
-
-        result = db.getTest(userId);
+        let themeId;
+        if(req.body.idTheme) themeId = req.body.idTheme;
+        else themeId = db.selectIdFromThemes(req.body.choose);
+        result = db.getTest(userId, themeId);
         let answerIdArr = [];
 
         answerIdArr.push(result.idAnswer1);
@@ -148,6 +146,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         test.content1 = result.content1;
         test.content2 = result.content2;
         test.userId = userId;
+        test.idTheme = themeId;
 
         test.answers = answerArr;
         test.answersIds = answerIdArr;

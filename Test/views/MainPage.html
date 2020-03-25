@@ -20,6 +20,24 @@
                 document.getElementById('subButton').disabled = false;
             }
         }
+        document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('textarea, input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
+
+        });
+
+        function saveData(){
+            // выбираем на странице все элементы типа textarea и input
+            document.querySelectorAll('input, select').forEach(function(e) {
+                sessionStorage.setItem(e.name, e.value);
+            });
+
+        }
+
     </script>
 
 </head>
@@ -28,10 +46,15 @@
     <div id="registration_text">Регистрация</div>
 
     <div id="input_data">
-        <form  action="test" method="post">
+        <form  action="choose" method="post">
             <input id = "fName" type="text" name = "firstName" placeholder="Фамилия" minlength="2"><br>
             <input id = "sName" type="text" name = "secondName" placeholder="Имя" minlength="2" onchange="check()"><br>
-            <button id = "subButton" type="submit" disabled = disabled >Подтвердить</button>
+            <h5>Желаемая должность</h5>
+            <select name = "position">
+                <option value="Техник-программист">Техник-программист</option>
+                <option value="Инженер-программист">Инженер-программист</option>
+            </select><br>
+            <button id = "subButton" type="submit" disabled = disabled onclick="saveData()" >Подтвердить</button>
         </form>
     </div>
 </div>
