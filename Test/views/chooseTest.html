@@ -20,7 +20,7 @@
 <body>
 <div id="wrapper">
     <div id="registration_text">Выберите тему теста</div>
-    <div id="input_data">
+    <div id="choose_data">
         <form  action="test" method="post">
             <input type = "hidden" name = "firstName" >
             <input type = "hidden" name = "secondName" >
@@ -28,7 +28,7 @@
 
             <button name = "choose" type="submit" onclick="saveData()" value = "JavaScript">JavaScript</button><br>
             <button name = "choose"  type="submit" onclick="saveData()" value = "ООП">ООП</button><br>
-            <button name = "choose" type="submit" disabled = disabled  value = "Личность">Личность</button>
+            <button name = "choose" type="submit" onclick="saveData()" value = "HTML">HTML</button>
         </form>
     </div>
 </div>

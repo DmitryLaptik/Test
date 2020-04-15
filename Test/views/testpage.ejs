@@ -30,7 +30,7 @@
 
 <body>
 <div id = "back">
-<p>Тест <%=testData.countFinishTests%></p><br>
+<p>Вопрос <%=testData.countFinishTests%> из 15</p><br>
 <form action="test" method="post">
 <fieldset id = "form" onclick="activate()" >
     <legend><%=testData.content1%></legend>
@@ -42,7 +42,7 @@
     <% for(var i=0; i<testData.answers.length;i++) {%>
     <input type="radio" required name="answer" id="r<%= i+1%>"  onclick="setAnswer(this)"><%= testData.answers[i]%><br>
     <%} %>
-</fieldset>
+</fieldset><br>
     <button id = "next" type="submit"  disabled = "disabled">Продолжить</button>
 </form>
 </div>

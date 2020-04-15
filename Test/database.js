@@ -7,11 +7,11 @@ class DataBase{
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite.sqlite','SQLITE_OPEN_FULLMUTEX');
-         //me.initializationTables();
-         //me.initDataThemes(me);
-         //me.initDataAnswers(me);
-         //me.initDataQuestions(me);
-         //me.initDataPositions(me);
+        //me.initializationTables();
+        // me.initDataThemes(me);
+        // me.initDataAnswers(me);
+        // me.initDataQuestions(me);
+        // me.initDataPositions(me);
     };
 
 
@@ -120,7 +120,7 @@ class DataBase{
     initDataThemes(me) {//answers
         me.insertValue('themes', 'JavaScript');
         me.insertValue('themes', 'ООП');
-        me.insertValue('themes', 'Личность');
+        me.insertValue('themes', 'HTML');
     }
     initDataPositions(me) {//answers
         me.insertValue('positions', 'Техник-программист');
@@ -292,10 +292,67 @@ class DataBase{
         me.insertValue('answers','Производные классы содержат поля и методы родительского.');
         me.insertValue('answers','Производные классы содержат методы родительского класса.');
         me.insertValue('answers','Производные классы наследуют поля родительского класса.');
-
         me.insertValue('answers','это процесс сокрытия компонентов данных и кода, реализующего функциональность, за некоторым интерфейсом');
         me.insertValue('answers','это процесс создания классов более высокого уровня, от которых можно создать более специфические сущности.');
+        ///
+        me.insertValue('answers','<input type="datafile">');
+        me.insertValue('answers','<input type="file">');
+        me.insertValue('answers','<input type="folder">');
+        me.insertValue('answers','<input type="filelist">');
 
+        me.insertValue('answers','Вставить все переключатели внутрь < label >.');
+        me.insertValue('answers','Добавить к каждому переключателю атрибут value с одинаковым значением.');
+        me.insertValue('answers','Вставить все переключатели внутрь < section >.');
+        me.insertValue('answers','Добавить к каждому переключателю атрибут name с одинаковым значением.');
+
+        me.insertValue('answers','rows');
+        me.insertValue('answers','length');
+        me.insertValue('answers','size');
+        me.insertValue('answers','cols');
+
+        me.insertValue('answers','<action>');
+        me.insertValue('answers','<form >');
+        me.insertValue('answers','<p>');
+        me.insertValue('answers','<input>');
+
+        me.insertValue('answers','<input type="radio">');
+        me.insertValue('answers','<input type="checkbox">');
+        me.insertValue('answers','<input type="button">');
+        me.insertValue('answers','<input type="switch">');
+
+        me.insertValue('answers','<input type="checkbox" selected>');
+        me.insertValue('answers','<input type="checkbox" autofocus>');
+        me.insertValue('answers','<input type="checkbox" checked>');
+        me.insertValue('answers','<input type="checkbox" required>');
+
+        me.insertValue('answers','hidden');
+        me.insertValue('answers','autofocus');
+        me.insertValue('answers','disabled');
+        me.insertValue('answers','check');
+
+        me.insertValue('answers','<textarea>');
+        me.insertValue('answers','title');
+        me.insertValue('answers','label');
+        me.insertValue('answers','text');
+
+        me.insertValue('answers','name');
+        me.insertValue('answers','type');
+        me.insertValue('answers','type');
+        me.insertValue('answers','value');
+        me.insertValue('answers','<input type="file" accept="music/*">');
+        me.insertValue('answers','<input type="file" accept="sound/*">');
+        me.insertValue('answers','<input type="file" accept="mp3/*">');
+        me.insertValue('answers','<input type="file" accept="audio/*">');
+
+        me.insertValue('answers','post');
+        me.insertValue('answers','form');
+        me.insertValue('answers','action');
+        me.insertValue('answers','method');
+        me.insertValue('answers','legend');
+        me.insertValue('answers','id');
+        me.insertValue('answers','<input type="submit">');
+        me.insertValue('answers','<input type="return">');
+        me.insertValue('answers','<input type="send">');
     };
     initDataQuestions(me){
         me.insertValue('questions','Чему равна длина arr.length массива arr?', 'let arr = [];\n' +
@@ -381,6 +438,31 @@ class DataBase{
         me.insertValue('questions','Драконы умеют летать (как, например, птицы) и ползать (как, например, ящерицы). С точки зрения ООП, примером чего является данная ситуация (выберите наиболее точный вариант)?',null,125,126,128,148,149,null,null,125,2);
         me.insertValue('questions','Термин "наследование" обозначает, что...',null,147,148,149,150,null,null,null,148,2);
         me.insertValue('questions','Выберете наиболее точное определение абстракции:',null,110,114,151,152,null,null,null,152,2);
+
+
+        me.insertValue('questions','Как сделать поле для загрузки файлов?',null,153,154,155,156,null,null,null,154,3);//
+        me.insertValue('questions','Как объединить несколько переключателей в группу?',null,157,158,159,160,null,null,null,160,3);//
+        me.insertValue('questions','Какой атрибут устанавливает высоту списка?',null,161,162,163,164,null,null,null,163,3);//
+        me.insertValue('questions','Какой элемент создаёт форму?',null,165,166,167,168,null,null,null,166,3);//
+        me.insertValue('questions','Какой код создаёт переключатели?',null,169,170,171,172,null,null,null,169,3);//
+        me.insertValue('questions','Как сделать флажок заранее выделенным?',null,173,174,175,176,null,null,null,175,3);//
+        me.insertValue('questions','Какой код создаёт флажки?',null,169,170,171,172,null,null,null,170,3);//
+        me.insertValue('questions','Какой атрибут элемента <input> блокирует поле для ввода данных?',null,177,178,179,180,null,null,null,179,3);
+        me.insertValue('questions','Какой элемент создаёт многострочное текстовое поле?',null,170,171,169,181,null,null,null,181,3);
+        me.insertValue('questions','Какой атрибут элемента <optgroup> устанавливает заголовок группы?',null,182,183,184,196,null,null,null,183,3);
+
+        me.insertValue('questions','Какой атрибут элемента <form> задаёт обработчик формы?',null,185,186,194,187,null,null,null,194,3);//
+        me.insertValue('questions','Как указать загружать только аудиофайлы?',null,188,189,190,191,null,null,null,191,3);//
+        me.insertValue('questions','Какой атрибут элемента <form> задаёт метод отправки формы?',null,192,193,194,195,null,null,null,195,3);//
+        me.insertValue('questions','Через какой атрибут поле формы можно связать с самой формой?',null,194,193,197,195,null,null,null,193,3);//
+        me.insertValue('questions','Как сделать кнопку для отправки формы?',null,198,199,200,171,null,null,null,198,3);//
+
+
+
+
+
+
+
     };
     insertValue(tableName,...values){
         let me = this;
@@ -443,8 +525,9 @@ class DataBase{
             for(let i = 0; i <results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
                 while(true) {
-                    if(themeId == 1) randomId = me.getRandomInt(1,17);
-                    else randomId = me.getRandomInt(18,33);
+                    if(themeId == 1) randomId = me.getRandomInt(1,18);
+                    if(themeId == 2)  randomId = me.getRandomInt(18,33);
+                    if(themeId == 3)  randomId = me.getRandomInt(33,48);
                     if(!arrId.includes(randomId)) break;
                 }
             }
@@ -517,8 +600,8 @@ class DataBase{
     };
 }
 
- //let db = new DataBase();
-//console.log(db.dbSync.run(`select * from questions`));
+let db = new DataBase();
+console.log(db.dbSync.run(`select * from users`));
 
 // console.log(db.seectIdFromPositions('Техник-программист'));
 // console.log(db.selectIdFromPositions('JavaScript'));

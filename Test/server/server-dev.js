@@ -22,6 +22,26 @@ app.set('view engine','ejs');
 app.use(express.static(PROJ_DIR));
 
 app.get('/', (req, res) => {
+
+    if(req.body && req.body.userId) {
+        let userId = req.body.userId;
+        let result = db.calcUserResult(userId);
+        db.updateUserMark(userId, result.toFixed(1));
+        db.resetTestCount(userId, result.toFixed(1));
+        db.clearResultsUser(userId);
+    }
+    res.sendFile(PROJ_DIR + 'views/MainPage.html')
+});
+
+app.post('/',urlencodedP, (req, res) => {
+
+    if(req.body && req.body.userId) {
+        let userId = req.body.userId;
+        let result = db.calcUserResult(userId);
+        db.updateUserMark(userId, result.toFixed(1));
+        db.resetTestCount(userId, result.toFixed(1));
+        db.clearResultsUser(userId);
+    }
     res.sendFile(PROJ_DIR + 'views/MainPage.html')
 });
 
@@ -98,11 +118,9 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(countFinishTests >= 15){
         let result = db.calcUserResult(userId);
         let data = {};
-        //db.clearResultsUser(userId);
         data.result =  result.toFixed(1).toString();
         data.questResults = db.returnQusetionByUserId(userId);
-        db.updateUserMark(userId, result.toFixed(1));
-        db.resetTestCount(userId, result.toFixed(1));
+        data.userId = userId;
         res.render('resultpage', {data:data});
     }
     else {
@@ -111,7 +129,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         else themeId = db.selectIdFromThemes(req.body.choose);
         result = db.getTest(userId, themeId);
         let answerIdArr = [];
-
+        if(!result) return res.sendStatus(400);
         answerIdArr.push(result.idAnswer1);
         answerIdArr.push(result.idAnswer2);
         answerIdArr.push(result.idAnswer3);

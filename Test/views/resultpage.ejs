@@ -12,14 +12,15 @@
 
 <body>
 <div id = "back">
-<form action="/" method="get">
-    <fieldset id = "form">
-        <legend>Your result</legend>
-        <p><%=data.result%></p><br>
-    </fieldset>
+<form action="/" method="post">
+    <legend>Your result</legend>
+    <p><%=data.result%></p><br>
+    <input type = "hidden" name = "userId" value = <%=data.userId%>>
     <button id = "next" type="submit">Вернуться назад</button>
+</form>
+
     <% for(let i = 0; i < data.questResults.length; i++) {%>
-        <p>Тест <%=i+1%></p><br>
+        <p>Вопрос <%=i+1%></p><br>
         <fieldset>
             <legend><%=data.questResults[i].content1%></legend>
             <pre><code><%=data.questResults[i].content2%></code></pre><br>
@@ -28,7 +29,6 @@
             <%} %>
         </fieldset>
     <%} %>
-</form>
 </div>
 </body>
 

@@ -15,6 +15,10 @@
             let sName = document.getElementById('sName');
             let y = fName.value.match(re);
             let x = sName.value.match(re);
+            if (!y)  fName.style.outline = "red solid 1px";
+            else     fName.style.outline = "green solid 1px";
+            if (!x)  sName.style.outline = "red solid 1px";
+            else     sName.style.outline = "green solid 1px";
 
             if (x && y) {
                 document.getElementById('subButton').disabled = false;
@@ -41,14 +45,14 @@
     </script>
 
 </head>
-<body>
+<body onload="check()">
 <div id="wrapper">
     <div id="registration_text">Регистрация</div>
 
     <div id="input_data">
-        <form  action="choose" method="post">
-            <input id = "fName" type="text" name = "firstName" placeholder="Фамилия" minlength="2"><br>
-            <input id = "sName" type="text" name = "secondName" placeholder="Имя" minlength="2" onchange="check()"><br>
+        <form  action="choose" method="post" >
+            <input id = "fName" type="text" name = "firstName" placeholder="Фамилия" minlength="2" onchange="check()" title = "Введите фамилию на русском начиная с большой буквы"><br>
+            <input id = "sName" type="text" name = "secondName" placeholder="Имя" minlength="2" onchange="check()" title = "Введите фамилию на русском начиная с большой буквы"><br>
             <h5>Желаемая должность</h5>
             <select name = "position">
                 <option value="Техник-программист">Техник-программист</option>
