@@ -1,24 +1,29 @@
 body{ background-color: #caddda}
 
 #wrapper {
-    background-color: blue;
+    background-color: lightblue;
     padding-left: 10%;
     padding-right: 10%;
-    height: 900px;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    height: 600px;
     max-width: 600px;
     margin: auto;
 }
 #registration_text {
-    background-color: red;
+    background-color: #5555ff;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
     text-align: center;
     font: 28px 'Oswald', Arial bold;
     padding: 10px;
 }
+
 #input_data {
     margin: 0;
     position: relative;
     top: 5%;
-    left: 20%;
+    left: 16%;
 }
 pre{
     background-color: #caddda;
@@ -42,8 +47,8 @@ p{
     font-size: 30px;
     padding-top: 5%;
     position: relative;
-    left: 47%;
-    width: 100px;
+    left: 40%;
+    width: 300px;
 }
 #next{
     position: relative;
@@ -57,11 +62,26 @@ fieldset input{
     box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
     cursor: pointer;
 }
-
+button#subButton{
+    position: relative;
+    left: 13%;
+}
 button{
     position: relative;
+    border-radius: 25px;
     left: 13%;
 }
 #input_data *{
     margin-top: 9px;
+    position: relative;
+    left:2%;
+}
+#choose_data *{
+    margin-top: 9px;
+    position: relative;
+    left:17%;
+    border-radius: 10px;
+}
+legend{
+
 }

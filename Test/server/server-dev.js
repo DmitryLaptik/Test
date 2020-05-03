@@ -12,7 +12,6 @@ const app = express(),
 const db = new DataBase();
 
 db.initializationTables();
-
 const jsonParser = bodyP.json();
 console.log(jsonParser);
 const urlencodedP = bodyP.urlencoded({extended: false});
@@ -22,7 +21,27 @@ app.set('view engine','ejs');
 app.use(express.static(PROJ_DIR));
 
 app.get('/', (req, res) => {
-    res.sendFile(PROJ_DIR + 'html/MainPage.html')
+
+    if(req.body && req.body.userId) {
+        let userId = req.body.userId;
+        let result = db.calcUserResult(userId);
+        db.updateUserMark(userId, result.toFixed(1));
+        db.resetTestCount(userId, result.toFixed(1));
+        db.clearResultsUser(userId);
+    }
+    res.sendFile(PROJ_DIR + 'views/MainPage.html')
+});
+
+app.post('/',urlencodedP, (req, res) => {
+
+    if(req.body && req.body.userId) {
+        let userId = req.body.userId;
+        let result = db.calcUserResult(userId);
+        db.updateUserMark(userId, result.toFixed(1));
+        db.resetTestCount(userId, result.toFixed(1));
+        db.clearResultsUser(userId);
+    }
+    res.sendFile(PROJ_DIR + 'views/MainPage.html')
 });
 
 const PORT = process.env.PORT || 8080;
@@ -31,16 +50,13 @@ app.listen(PORT, () => {
     console.log('Press Ctrl+C to quit.')
 });
 
-app.get('/reg', (req, res) => {
-    res.sendFile(PROJ_DIR + 'html/registryPage.html');
-});
-
-
 app.get('/page/:id', (req, res) => {
     res.sendFile(PROJ_DIR + 'html/page' + req.params.id +'.html');
 });
 
-
+app.post('/choose',(req, res) => {
+    res.sendFile(PROJ_DIR + 'views/chooseTest.html')
+});
 // app.post('/test',(req, res) => {
 //     if(!req.body) return res.sendStatus(400);
 //     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
@@ -67,7 +83,7 @@ app.get('/page/:id', (req, res) => {
 //     test.content2 = result.content2;
 //     test.firstName  = req.body.firstName;
 //     test.secName  = req.body.secondName;
-//     test.countFinishTests  = result.countFinishTests;
+//     test.countFinishQuest  = result.countFinishQuest;
 //     test.answers = answerArr;
 //
 //     db.insertValue('results', userId, test.idQuest, null);
@@ -83,9 +99,9 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     let DBdata = null,  isExist = false, userId, result;
 
     if(req.body.firstName && req.body.secondName) {
-        DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
+        DBdata = {firstName:req.body.firstName, secName:req.body.secondName,position:req.body.position};
         let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
-        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
+        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null, db.selectIdFromPositions(DBdata.position));
         userId = db.returnUserId(DBdata.firstName,DBdata.secName);
     }
     else{
@@ -97,23 +113,36 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         let arrId = req.body.answersIds.split(',');
         db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
     }
-    let countFinishTests  = db.returnTestCount(Number(userId));
-    if(countFinishTests >= 15){
+    let countFinishQuest  = db.returnTestCount(Number(userId));
+    if(countFinishQuest >= 15){
+        let text = [];
+        text[0] = "Извините, с таким уровнем знаний вы нам не подходите.";
+        text[1] = "Поздравляем! Вы нам подходите!";
         let result = db.calcUserResult(userId);
         let data = {};
-        //let x = db.resetTestCount(userId, result.toFixed(1));
-        //db.clearResultsUser(userId);
         data.result =  result.toFixed(1).toString();
+        let position = db.selectIdPositionsFromUsers(userId);
         data.questResults = db.returnQusetionByUserId(userId);
-        res.render('resultpage', {data:data});
+        data.resultAnswer = '';
+        if(position == 1) {
+            if(data.result >=50)    data.resultAnswer = text[1];
+            else                    data.resultAnswer = text[0];
+        }
+        if(position == 2) {
+            if(data.result >=80)    data.resultAnswer = text[1];
+            else                    data.resultAnswer = text[0];
+        }
 
+        data.userId = userId;
+        res.render('resultpage', {data:data});
     }
     else {
-
-
-        result = db.getTest(userId);
+        let themeId;
+        if(req.body.idTheme) themeId = req.body.idTheme;
+        else themeId = db.selectIdFromThemes(req.body.choose);
+        result = db.getTest(userId, themeId);
         let answerIdArr = [];
-
+        if(!result) return res.sendStatus(400);
         answerIdArr.push(result.idAnswer1);
         answerIdArr.push(result.idAnswer2);
         answerIdArr.push(result.idAnswer3);
@@ -148,10 +177,11 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         test.content1 = result.content1;
         test.content2 = result.content2;
         test.userId = userId;
+        test.idTheme = themeId;
 
         test.answers = answerArr;
         test.answersIds = answerIdArr;
-        test.countFinishTests = db.returnTestCount(userId);
+        test.countFinishQuest = db.returnTestCount(userId);
         res.render('testpage', {testData: test});
     }
 });

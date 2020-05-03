@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html">
+    <meta charset="UTF-8">
+    <meta name = "viewport" content="width = device- width, initial-scale=1.0">
+    <meta http-equiv = "X-AU-Compatible" content="ie=edge">
+    <title>OnlineTest</title>
+    <link rel="stylesheet" type="text/css"  href="">
+    <link rel="stylesheet" href="../css/rPageStyles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script>
+        function check() {
+            var re = `^[А-Я]+[а-я]{0,15}`;
+            let fName = document.getElementById('fName');
+            let sName = document.getElementById('sName');
+            let y = fName.value.match(re);
+            let x = sName.value.match(re);
+            if (!y)  fName.style.outline = "red solid 1px";
+            else     fName.style.outline = "green solid 1px";
+            if (!x)  sName.style.outline = "red solid 1px";
+            else     sName.style.outline = "green solid 1px";
+
+            if (x && y) {
+                document.getElementById('subButton').disabled = false;
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('textarea, input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
+
+        });
+
+        function saveData(){
+            // выбираем на странице все элементы типа textarea и input
+            document.querySelectorAll('input, select').forEach(function(e) {
+                sessionStorage.setItem(e.name, e.value);
+            });
+
+        }
+
+    </script>
+
+</head>
+<body onload="check()">
+<div id="wrapper">
+    <div id="registration_text">Регистрация</div>
+
+    <div id="input_data">
+        <form  action="choose" method="post" >
+            <input id = "fName" type="text" name = "firstName" placeholder="Фамилия" minlength="2" onchange="check()" title = "Введите фамилию на русском начиная с большой буквы"><br>
+            <input id = "sName" type="text" name = "secondName" placeholder="Имя" minlength="2" onchange="check()" title = "Введите фамилию на русском начиная с большой буквы"><br>
+            <h5>Желаемая должность</h5>
+            <select name = "position">
+                <option value="Техник-программист">Техник-программист</option>
+                <option value="Инженер-программист">Инженер-программист</option>
+            </select><br>
+            <button id = "subButton" type="submit" disabled = disabled onclick="saveData()" >Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

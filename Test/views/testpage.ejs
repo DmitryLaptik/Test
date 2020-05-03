@@ -30,18 +30,19 @@
 
 <body>
 <div id = "back">
-<p>Тест <%=testData.countFinishTests%></p><br>
+<p>Вопрос <%=testData.countFinishQuest%> из 15</p><br>
 <form action="test" method="post">
 <fieldset id = "form" onclick="activate()" >
     <legend><%=testData.content1%></legend>
     <pre><code><%=testData.content2%></code></pre><br>
     <input type = "hidden" name = "idUser" value = <%= testData.userId%>>
     <input type = "hidden" name = "idQuest" value = <%= testData.idQuest%>>
+    <input type = "hidden" name = "idTheme" value = <%= testData.idTheme%>>
     <input type = "hidden" name = "answersIds" value = <%= testData.answersIds%>>
     <% for(var i=0; i<testData.answers.length;i++) {%>
     <input type="radio" required name="answer" id="r<%= i+1%>"  onclick="setAnswer(this)"><%= testData.answers[i]%><br>
     <%} %>
-</fieldset>
+</fieldset><br>
     <button id = "next" type="submit"  disabled = "disabled">Продолжить</button>
 </form>
 </div>

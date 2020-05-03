@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html">
+    <meta charset="UTF-8">
+    <meta name = "viewport" content="width = device- width, initial-scale=1.0">
+    <meta http-equiv = "X-AU-Compatible" content="ie=edge">
+    <title>OnlineTest</title>
+    <link rel="stylesheet" type="text/css"  href="">
+    <link rel="stylesheet" href="../css/rPageStyles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<script>
+    function saveData(){
+        document.querySelectorAll('input, select').forEach(function(e) {
+            if(e.value === '') e.value = sessionStorage.getItem(e.name);
+        });
+        sessionStorage.clear();
+    }
+</script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="registration_text">Выберите тему теста</div>
+    <div id="choose_data">
+        <form  action="test" method="post">
+            <input type = "hidden" name = "firstName" >
+            <input type = "hidden" name = "secondName" >
+            <input type = "hidden" name = "position" >
+
+            <button name = "choose" type="submit" onclick="saveData()" value = "JavaScript">JavaScript</button><br>
+            <button name = "choose"  type="submit" onclick="saveData()" value = "ООП">ООП</button><br>
+            <button name = "choose" type="submit" onclick="saveData()" value = "HTML">HTML</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
