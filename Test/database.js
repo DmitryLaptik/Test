@@ -5,30 +5,23 @@ class DataBase{
         let me = this;
         let sqliteSync = require('sqlite-sync');
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
-        let sqlite3 = require('sqlite3').verbose();
-        me.db = new sqlite3.Database('dbsqlite.sqlite','SQLITE_OPEN_FULLMUTEX');
+        me.initializationTables();
     };
 
-    initAllData(){
-        this.initDataThemes(this);
-        this.initDataAnswers(this);
-        this.initDataQuestions(this);
-        this.initDataPositions(this);
-    }
     initializationTables(){
         let me = this;
-        me.db.serialize(function() {
-            me.db.run('Create TABLE if not exists positions (idPosition Integer primary key AUTOINCREMENT , ' +
+            me.dbSync.run('Create TABLE if not exists positions (idPosition Integer primary key AUTOINCREMENT , ' +
                 'name TEXT UNIQUE)');
-            me.db.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
+            me.dbSync.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
                 'fName TEXT, ' +
                 'sName TEXT, ' +
                 'countFinishQuest integer, ' +
                 'testMark NUM,' +
                 'idPosition integer,' +
+                'theme TEXT,' +
                 'FOREIGN KEY (idPosition) REFERENCES positions(idPosition) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.db.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
+            me.dbSync.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
                 'content1 TEXT, ' +
                 'content2 TEXT, ' +
                 'idAnswer1 Integer default null, ' +
@@ -43,20 +36,20 @@ class DataBase{
                 'FOREIGN KEY (idRightAnswer) REFERENCES answers(idRightAnswer) ON DELETE CASCADE ON UPDATE CASCADE,'+
                 'FOREIGN KEY (idTheme) REFERENCES themes (idTheme) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.db.run('Create TABLE if not exists answers (idAnswer Integer primary key AUTOINCREMENT , ' +
+            me.dbSync.run('Create TABLE if not exists answers (idAnswer Integer primary key AUTOINCREMENT , ' +
                 'content TEXT UNIQUE)');
 
-            me.db.run('Create TABLE if not exists themes (idTheme Integer primary key AUTOINCREMENT , ' +
+            me.dbSync.run('Create TABLE if not exists themes (idTheme Integer primary key AUTOINCREMENT , ' +
                 'name TEXT UNIQUE)');
 
-            me.db.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
+            me.dbSync.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
                 'idUser Integer, ' +
                 'idQuest Integer, ' +
                 'idAnswer Integer, ' +
                 'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
                 'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.db.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
+            me.dbSync.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
                 '   AFTER INSERT ON results ' +
                 'BEGIN\n' +
                 ' update users \n' +
@@ -64,9 +57,15 @@ class DataBase{
                 ' where idUser = NEW.idUser;\n' +
                 ' END');
 
-        });
-
+        me.initAllData();
     };
+
+    initAllData(){
+        this.initDataThemes(this);
+        this.initDataAnswers(this);
+        this.initDataQuestions(this);
+        this.initDataPositions(this);
+    }
 
     returnUserById(userId){
         let me = this;
@@ -117,16 +116,19 @@ class DataBase{
         }
         return returnResult
     }
-    initDataThemes(me) {//answers
+    initDataThemes() {//answers
+        let me = this;
         me.insertValue('themes', 'JavaScript');
         me.insertValue('themes', 'ООП');
         me.insertValue('themes', 'HTML');
     }
-    initDataPositions(me) {//answers
+    initDataPositions() {//answers
+        let me = this;
         me.insertValue('positions', 'Техник-программист');
         me.insertValue('positions', 'Инженер-программист');
     }
-    initDataAnswers(me){//answers
+    initDataAnswers(){//answers
+        let me = this;
         me.insertValue('answers','Другое.');
         me.insertValue('answers','Числа от 0 до 9.');
         me.insertValue('answers','Числа от 0 до 10.');
@@ -354,7 +356,11 @@ class DataBase{
         me.insertValue('answers','<input type="return">');
         me.insertValue('answers','<input type="send">');
     };
-    initDataQuestions(me){
+    initDataQuestions(){
+        let me = this;
+        let results = me.dbSync.run(`SELECT * FROM questions`);
+        if(results.length!==0) return;
+
         me.insertValue('questions','Чему равна длина arr.length массива arr?', 'let arr = [];\n' +
             'arr[1] = 1;\n' +
             'arr[3] = 33;}',10,11,12,13,14,22,null,14,1);
@@ -457,12 +463,6 @@ class DataBase{
         me.insertValue('questions','Через какой атрибут поле формы можно связать с самой формой?',null,194,193,197,195,null,null,null,193,3);//
         me.insertValue('questions','Как сделать кнопку для отправки формы?',null,198,199,200,171,null,null,null,198,3);//
 
-
-
-
-
-
-
     };
     insertValue(tableName,...values){
         let me = this;
@@ -483,9 +483,9 @@ class DataBase{
         console.log('removeDataFromTable ' + tableName );
         this.dbSync.run('delete from ' +tableName);
     }
-    returnUserId(fName,secName) {
+    returnUserId(fName,secName,idTheme,idPosition) {
         let me = this;
-        let results = me.dbSync.run(`SELECT idUser FROM users where fName = '${fName}' and sName = '${secName}'`);
+        let results = me.dbSync.run(`SELECT idUser FROM users where fName = '${fName}' and sName = '${secName}' and theme = '${idTheme}' and idPosition = ${idPosition}`);
         if(results.length!==0) {
 
             return results[0].idUser;
@@ -586,7 +586,7 @@ class DataBase{
 
     tableDelete(table){
         let me = this;
-        me.db.run('Drop TABLE '+table);
+        me.dbSync.run('Drop TABLE '+table);
     };
 
     clearResultsUser(userId){
@@ -608,7 +608,7 @@ class DataBase{
 }
 
 // let db = new DataBase();
-// console.log(db.showAllDataFromTable('positions'));
+// console.log(db.showAllDataFromTable('users'));
 // console.log(db.selectIdFromPositions('JavaScript'));
 
 //console.log(db.dbSync.run(`select * from questions join results on results.idQuest = questions.idQuest where results.idUser = 89 `));
