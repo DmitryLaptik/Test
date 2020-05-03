@@ -7,14 +7,14 @@ class DataBase{
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite.sqlite','SQLITE_OPEN_FULLMUTEX');
-        //me.initializationTables();
-        // me.initDataThemes(me);
-        // me.initDataAnswers(me);
-        // me.initDataQuestions(me);
-        // me.initDataPositions(me);
     };
 
-
+    initAllData(){
+        this.initDataThemes(this);
+        this.initDataAnswers(this);
+        this.initDataQuestions(this);
+        this.initDataPositions(this);
+    }
     initializationTables(){
         let me = this;
         me.db.serialize(function() {
@@ -23,7 +23,7 @@ class DataBase{
             me.db.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
                 'fName TEXT, ' +
                 'sName TEXT, ' +
-                'countFinishTests integer, ' +
+                'countFinishQuest integer, ' +
                 'testMark NUM,' +
                 'idPosition integer,' +
                 'FOREIGN KEY (idPosition) REFERENCES positions(idPosition) ON DELETE CASCADE ON UPDATE CASCADE)');
@@ -60,7 +60,7 @@ class DataBase{
                 '   AFTER INSERT ON results ' +
                 'BEGIN\n' +
                 ' update users \n' +
-                ' set countFinishTests = countFinishTests + 1 \n' +
+                ' set countFinishQuest = countFinishQuest + 1 \n' +
                 ' where idUser = NEW.idUser;\n' +
                 ' END');
 
@@ -430,7 +430,7 @@ class DataBase{
         me.insertValue('questions','Выберите наиболее точное определение наследованию:',null,111,112,113,114,115,null,null,114,2);
         me.insertValue('questions','В чём отличие Коллекции и Массива группы связанных объектов?',null,116,117,118,119,null,null,null,116,2);
         me.insertValue('questions','Метод, который определяет состояние объекта, не изменяя его.',null,120,121,122,123,124,null,null,120,2);
-        me.insertValue('questions','Какой принцип ООП необходимо использовать, чтобы заменить конструкции if-then-else в данном фрагменте кода:',null,125,126,127,128,129,null,null,125,2);
+        me.insertValue('questions','Какой принцип ООП необходимо использовать, чтобы заменить конструкции if-then-else в данном фрагменте кода:','if (animal.isCat()){/* код */}\nelse if (animal.isDog()){}\nelse if (animal.isKoala()){/* код */}\n...\nelse if (animal.isMouse()){/* код */}',125,126,127,128,129,null,null,125,2);
         me.insertValue('questions','Какая разница между идентичностью (identity) и равенством (equality) объектов в ООП?',null,130,131,132,133,null,null,null,133,2);
         me.insertValue('questions','Выберите правильные утверждения по отношению к ad hoc полиморфизму:',null,134,135,136,137,null,null,null,135,2);
         me.insertValue('questions','Словом "агрегация" (включение, композиция) точнее всего описывается отношение между...',null,138,139,140,141,null,null,null,141,2);
@@ -505,6 +505,12 @@ class DataBase{
         return result;
     };
 
+    selectIdPositionsFromUsers(idUser){
+        let me = this;
+        let result = me.dbSync.run(`SELECT idPosition FROM users WHERE idUser = '${idUser}'`)[0].idPosition;
+        return result;
+    };
+
     selectIdFromThemes(name){
         let me = this;
         let result = me.dbSync.run(`SELECT idTheme FROM themes WHERE name = '${name}' `)[0].idTheme;
@@ -562,13 +568,13 @@ class DataBase{
     }
 
     returnTestCount(userId){
-        return  this.dbSync.run(`SELECT countFinishTests FROM users where idUser = ${userId} `)[0].countFinishTests;
+        return  this.dbSync.run(`SELECT countFinishQuest FROM users where idUser = ${userId} `)[0].countFinishQuest;
 
     }
 
     resetTestCount(userId, mark){
         let me = this;
-        let result = me.dbSync.run(`update users set countFinishTests = 0, testMark = ${mark} where idUser = ${userId}`);
+        let result = me.dbSync.run(`update users set countFinishQuest = 0, testMark = ${mark} where idUser = ${userId}`);
         let user = me.dbSync.run(`select * from users where idUser = ${userId}`);
         console.log(user);
     }
@@ -576,6 +582,7 @@ class DataBase{
     nextTest() {
         console.log('nextTest');
     }
+
 
     tableDelete(table){
         let me = this;
@@ -600,16 +607,13 @@ class DataBase{
     };
 }
 
-let db = new DataBase();
-console.log(db.dbSync.run(`select * from users`));
-
-// console.log(db.seectIdFromPositions('Техник-программист'));
+// let db = new DataBase();
+// console.log(db.showAllDataFromTable('positions'));
 // console.log(db.selectIdFromPositions('JavaScript'));
 
 //console.log(db.dbSync.run(`select * from questions join results on results.idQuest = questions.idQuest where results.idUser = 89 `));
 //db.returnQusetionByUserId(89);
 //console.log(db.dbSync.run(`select * from results  where results.idUser = 86 `));
-//db.showAllDataFromTable('themes');
 //db.clearResultsUser(74);
 // db.calcUserResult(62);
 //db.resetTestCount(80,33.3);

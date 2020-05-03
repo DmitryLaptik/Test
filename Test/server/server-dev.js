@@ -12,7 +12,6 @@ const app = express(),
 const db = new DataBase();
 
 db.initializationTables();
-
 const jsonParser = bodyP.json();
 console.log(jsonParser);
 const urlencodedP = bodyP.urlencoded({extended: false});
@@ -84,7 +83,7 @@ app.post('/choose',(req, res) => {
 //     test.content2 = result.content2;
 //     test.firstName  = req.body.firstName;
 //     test.secName  = req.body.secondName;
-//     test.countFinishTests  = result.countFinishTests;
+//     test.countFinishQuest  = result.countFinishQuest;
 //     test.answers = answerArr;
 //
 //     db.insertValue('results', userId, test.idQuest, null);
@@ -114,12 +113,26 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         let arrId = req.body.answersIds.split(',');
         db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
     }
-    let countFinishTests  = db.returnTestCount(Number(userId));
-    if(countFinishTests >= 15){
+    let countFinishQuest  = db.returnTestCount(Number(userId));
+    if(countFinishQuest >= 15){
+        let text = [];
+        text[0] = "Извините, с таким уровнем знаний вы нам не подходите.";
+        text[1] = "Поздравляем! Вы нам подходите!";
         let result = db.calcUserResult(userId);
         let data = {};
         data.result =  result.toFixed(1).toString();
+        let position = db.selectIdPositionsFromUsers(userId);
         data.questResults = db.returnQusetionByUserId(userId);
+        data.resultAnswer = '';
+        if(position == 1) {
+            if(data.result >=50)    data.resultAnswer = text[1];
+            else                    data.resultAnswer = text[0];
+        }
+        if(position == 2) {
+            if(data.result >=80)    data.resultAnswer = text[1];
+            else                    data.resultAnswer = text[0];
+        }
+
         data.userId = userId;
         res.render('resultpage', {data:data});
     }
@@ -168,7 +181,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
 
         test.answers = answerArr;
         test.answersIds = answerIdArr;
-        test.countFinishTests = db.returnTestCount(userId);
+        test.countFinishQuest = db.returnTestCount(userId);
         res.render('testpage', {testData: test});
     }
 });
