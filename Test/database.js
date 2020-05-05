@@ -7,6 +7,7 @@ class DataBase{
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         let sqlite3 = require('sqlite3').verbose();
         me.db = new sqlite3.Database('dbsqlite.sqlite','SQLITE_OPEN_FULLMUTEX');
+        me.initializationTables();
     };
 
     initAllData(){
@@ -65,7 +66,7 @@ class DataBase{
                 ' END');
 
         });
-
+        me.initAllData();
     };
 
     returnUserById(userId){
@@ -523,26 +524,22 @@ class DataBase{
     }
     getTest(userId, themeId){
 
-        let me = this, arrId = [], randomId = null;
-        let results = me.dbSync.run(`SELECT idResult, idQuest FROM results where idUser =  '${userId}' and idAnswer IS NULL`);
+        let me = this, arrId = [], randomId = null, i;
+        let questions =  me.dbSync.run(`SELECT * FROM questions where idTheme = ${themeId}`);
+        let results = me.dbSync.run(`SELECT idQuest FROM results where idUser =  '${userId}' and idAnswer IS NULL`);
         if(results.length === 0) {
-            results = me.dbSync.run(`SELECT idResult, idQuest FROM results where idUser =  '${userId}'`);
+            results = me.dbSync.run(`SELECT idQuest FROM results where idUser =  '${userId}'`);
 
-            for(let i = 0; i <results.length;i++) arrId.push(results[i].idQuest);
+            for(i = 0; i < results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
                 while(true) {
-                    if(themeId == 1) randomId = me.getRandomInt(1,18);
-                    if(themeId == 2)  randomId = me.getRandomInt(18,33);
-                    if(themeId == 3)  randomId = me.getRandomInt(33,48);
-                    if(!arrId.includes(randomId)) break;
+                    randomId = me.getRandomInt(1,16);
+                    if(!arrId.includes(questions[randomId].idQuest)) break;
                 }
             }
-
         } else randomId = results[0].idQuest;
 
-        let test =  me.dbSync.run(`SELECT * FROM questions where idQuest = ${randomId} and idTheme = ${themeId}`)[0];
-
-        return test;
+        return questions[randomId];
     };
     returnAnswerById(idAnswer){
 
