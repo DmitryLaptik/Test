@@ -1,13 +1,9 @@
 const express = require('express');
+const path = require('path');
 const bodyP = require('body-parser');
 const { DataBase } = require('../database.js');
 
-const app = express(),
-    DIST_DIR = __dirname,
-    PROJ_DIR = 'D:/Site/Test/',
-    WORK_PROJ_DIR = 'D:/Диплом/Site/Test/';
-
-// const PROJ_DIR = WORK_PROJ_DIR;
+const app = express(), PROJ_DIR = path.dirname(__dirname) + '\\';
 
 const db = new DataBase();
 
@@ -25,7 +21,7 @@ app.get('/', (req, res) => {
         let result = db.calcUserResult(userId);
         db.updateUserMark(userId, result.toFixed(1));
         db.resetTestCount(userId, result.toFixed(1));
-        db.clearResultsUser(userId);
+        //db.clearResultsUser(userId);
     }
     res.sendFile(PROJ_DIR + 'views/MainPage.html')
 });
@@ -39,13 +35,15 @@ app.post('/',urlencodedP, (req, res) => {
         db.resetTestCount(userId, result.toFixed(1));
         db.clearResultsUser(userId);
     }
+
     res.sendFile(PROJ_DIR + 'views/MainPage.html')
 });
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`App listening tto ${PORT}....`);
-    console.log('Press Ctrl+C to quit.')
+    console.log('Press Ctrl+C to quit.');
+    console.log(PROJ_DIR);
 });
 
 app.get('/page/:id', (req, res) => {
