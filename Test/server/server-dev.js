@@ -8,7 +8,6 @@ const app = express(), PROJ_DIR = path.dirname(__dirname) + '\\';
 const db = new DataBase();
 
 const jsonParser = bodyP.json();
-console.log(jsonParser);
 const urlencodedP = bodyP.urlencoded({extended: false});
 
 app.set('view engine','ejs');
@@ -54,41 +53,7 @@ app.get('/page/:id', (req, res) => {
 app.post('/choose',(req, res) => {
     res.sendFile(PROJ_DIR + 'views/chooseTest.html')
 });
-// app.post('/test',(req, res) => {
-//     if(!req.body) return res.sendStatus(400);
-//     let DBdata = {firstName:req.body.firstName, secName:req.body.secondName};
-//     let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
-//
-//     if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null);
-//
-//     let userId = db.returnUserId(DBdata.firstName,DBdata.secName);
-//     let result = db.getTest(userId);
-//     console.log(result);
-//     let answerArr = [];
-//
-//     answerArr.push(db.returnAnswerById(result.idAnswer1));
-//     answerArr.push(db.returnAnswerById(result.idAnswer2));
-//     answerArr.push(db.returnAnswerById(result.idAnswer3));
-//     answerArr.push(db.returnAnswerById(result.idAnswer4));
-//     answerArr.push(db.returnAnswerById(result.idAnswer5));
-//     answerArr.push(db.returnAnswerById(result.idAnswer6));
-//     answerArr.push(db.returnAnswerById(result.idAnswer7));
-//
-//     let test = {};
-//     test.idQuest = result.idQuest;
-//     test.content1 = result.content1;
-//     test.content2 = result.content2;
-//     test.firstName  = req.body.firstName;
-//     test.secName  = req.body.secondName;
-//     test.countFinishQuest  = result.countFinishQuest;
-//     test.answers = answerArr;
-//
-//     db.insertValue('results', userId, test.idQuest, null);
-//
-//     console.log(test);
-//     res.render('testpage',{testData:test});
-// });
-//
+
 
 app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
@@ -97,9 +62,9 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
 
     if(req.body.firstName && req.body.secondName) {
         DBdata = {firstName:req.body.firstName, secName:req.body.secondName,position:req.body.position};
-        let isExist = db.returnUserId(DBdata.firstName,DBdata.secName);
-        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null, db.selectIdFromPositions(DBdata.position));
-        userId = db.returnUserId(DBdata.firstName,DBdata.secName);
+        let isExist = db.returnUserId(DBdata.firstName,DBdata.secName, req.body.choose, db.selectIdFromPositions(DBdata.position));
+        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null, db.selectIdFromPositions(DBdata.position), req.body.choose);
+        userId = db.returnUserId(DBdata.firstName,DBdata.secName, req.body.choose, db.selectIdFromPositions(DBdata.position));
     }
     else{
         console.log(req.body);
