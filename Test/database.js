@@ -10,53 +10,52 @@ class DataBase{
 
     initializationTables(){
         let me = this;
-            me.dbSync.run('Create TABLE if not exists positions (idPosition Integer primary key AUTOINCREMENT , ' +
-                'name TEXT UNIQUE)');
-            me.dbSync.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
-                'fName TEXT, ' +
-                'sName TEXT, ' +
-                'countFinishQuest integer, ' +
-                'testMark NUM,' +
-                'idPosition integer,' +
-                'theme TEXT,' +
-                'FOREIGN KEY (idPosition) REFERENCES positions(idPosition) ON DELETE CASCADE ON UPDATE CASCADE)');
+        me.dbSync.run('Create TABLE if not exists positions (idPosition Integer primary key AUTOINCREMENT , ' +
+            'name TEXT UNIQUE)');
+        me.dbSync.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
+            'fName TEXT, ' +
+            'sName TEXT, ' +
+            'countFinishQuest integer, ' +
+            'testMark NUM,' +
+            'idPosition integer,' +
+            'theme TEXT,' +
+            'FOREIGN KEY (idPosition) REFERENCES positions(idPosition) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.dbSync.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
-                'content1 TEXT, ' +
-                'content2 TEXT, ' +
-                'idAnswer1 Integer default null, ' +
-                'idAnswer2 Integer default null, ' +
-                'idAnswer3 Integer default null, ' +
-                'idAnswer4 Integer default null, ' +
-                'idAnswer5 Integer default null, ' +
-                'idAnswer6 Integer default null, ' +
-                'idAnswer7 Integer default null, ' +
-                'idRightAnswer Integer, ' +
-                'idTheme Integer, ' +
-                'FOREIGN KEY (idRightAnswer) REFERENCES answers(idRightAnswer) ON DELETE CASCADE ON UPDATE CASCADE,'+
-                'FOREIGN KEY (idTheme) REFERENCES themes (idTheme) ON DELETE CASCADE ON UPDATE CASCADE)');
+        me.dbSync.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
+            'content1 TEXT, ' +
+            'content2 TEXT, ' +
+            'idAnswer1 Integer default null, ' +
+            'idAnswer2 Integer default null, ' +
+            'idAnswer3 Integer default null, ' +
+            'idAnswer4 Integer default null, ' +
+            'idAnswer5 Integer default null, ' +
+            'idAnswer6 Integer default null, ' +
+            'idAnswer7 Integer default null, ' +
+            'idRightAnswer Integer, ' +
+            'idTheme Integer, ' +
+            'FOREIGN KEY (idRightAnswer) REFERENCES answers(idRightAnswer) ON DELETE CASCADE ON UPDATE CASCADE,'+
+            'FOREIGN KEY (idTheme) REFERENCES themes (idTheme) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.dbSync.run('Create TABLE if not exists answers (idAnswer Integer primary key AUTOINCREMENT , ' +
-                'content TEXT UNIQUE)');
+        me.dbSync.run('Create TABLE if not exists answers (idAnswer Integer primary key AUTOINCREMENT , ' +
+            'content TEXT UNIQUE)');
 
-            me.dbSync.run('Create TABLE if not exists themes (idTheme Integer primary key AUTOINCREMENT , ' +
-                'name TEXT UNIQUE)');
+        me.dbSync.run('Create TABLE if not exists themes (idTheme Integer primary key AUTOINCREMENT , ' +
+            'name TEXT UNIQUE)');
 
-            me.dbSync.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
-                'idUser Integer, ' +
-                'idQuest Integer, ' +
-                'idAnswer Integer, ' +
-                'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
-                'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
+        me.dbSync.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
+            'idUser Integer, ' +
+            'idQuest Integer, ' +
+            'idAnswer Integer, ' +
+            'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
+            'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.dbSync.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
-                '   AFTER INSERT ON results ' +
-                'BEGIN\n' +
-                ' update users \n' +
-                ' set countFinishQuest = countFinishQuest + 1 \n' +
-                ' where idUser = NEW.idUser;\n' +
-                ' END');
-        });
+        me.dbSync.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
+            '   AFTER INSERT ON results ' +
+            'BEGIN\n' +
+            ' update users \n' +
+            ' set countFinishQuest = countFinishQuest + 1 \n' +
+            ' where idUser = NEW.idUser;\n' +
+            ' END');
         me.initAllData();
     };
 
@@ -532,7 +531,7 @@ class DataBase{
             for(i = 0; i < results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
                 while(true) {
-                    randomId = me.getRandomInt(1,16);
+                    randomId = me.getRandomInt(0,15);
                     if(!arrId.includes(questions[randomId].idQuest)) break;
                 }
             }
