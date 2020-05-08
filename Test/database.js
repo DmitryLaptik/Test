@@ -6,50 +6,57 @@ class DataBase{
         let sqliteSync = require('sqlite-sync');
         me.dbSync = sqliteSync.connect('dbsqlite.sqlite');
         me.initializationTables();
+        me.insertValue('admins', 'admin', 'password');
     };
 
     initializationTables(){
         let me = this;
-            me.dbSync.run('Create TABLE if not exists positions (idPosition Integer primary key AUTOINCREMENT , ' +
-                'name TEXT UNIQUE)');
-            me.dbSync.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
-                'fName TEXT, ' +
-                'sName TEXT, ' +
-                'countFinishQuest integer, ' +
-                'testMark NUM,' +
-                'idPosition integer,' +
-                'theme TEXT,' +
-                'FOREIGN KEY (idPosition) REFERENCES positions(idPosition) ON DELETE CASCADE ON UPDATE CASCADE)');
+        me.dbSync.run('Create TABLE if not exists positions (idPosition Integer primary key AUTOINCREMENT , ' +
+            'name TEXT UNIQUE)');
+        me.dbSync.run('Create TABLE if not exists users  (idUser Integer primary key AUTOINCREMENT, ' +
+            'fName TEXT, ' +
+            'sName TEXT, ' +
+            'countFinishQuest integer, ' +
+            'testMark NUM,' +
+            'idPosition integer,' +
+            'theme TEXT,' +
+            'FOREIGN KEY (idPosition) REFERENCES positions(idPosition) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.dbSync.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
-                'content1 TEXT, ' +
-                'content2 TEXT, ' +
-                'idAnswer1 Integer default null, ' +
-                'idAnswer2 Integer default null, ' +
-                'idAnswer3 Integer default null, ' +
-                'idAnswer4 Integer default null, ' +
-                'idAnswer5 Integer default null, ' +
-                'idAnswer6 Integer default null, ' +
-                'idAnswer7 Integer default null, ' +
-                'idRightAnswer Integer, ' +
-                'idTheme Integer, ' +
-                'FOREIGN KEY (idRightAnswer) REFERENCES answers(idRightAnswer) ON DELETE CASCADE ON UPDATE CASCADE,'+
-                'FOREIGN KEY (idTheme) REFERENCES themes (idTheme) ON DELETE CASCADE ON UPDATE CASCADE)');
+        me.dbSync.run('Create TABLE if not exists questions (idQuest Integer primary key AUTOINCREMENT , ' +
+            'content1 TEXT, ' +
+            'content2 TEXT, ' +
+            'idAnswer1 Integer default null, ' +
+            'idAnswer2 Integer default null, ' +
+            'idAnswer3 Integer default null, ' +
+            'idAnswer4 Integer default null, ' +
+            'idAnswer5 Integer default null, ' +
+            'idAnswer6 Integer default null, ' +
+            'idAnswer7 Integer default null, ' +
+            'idRightAnswer Integer, ' +
+            'idTheme Integer, ' +
+            'FOREIGN KEY (idRightAnswer) REFERENCES answers(idRightAnswer) ON DELETE CASCADE ON UPDATE CASCADE,'+
+            'FOREIGN KEY (idTheme) REFERENCES themes (idTheme) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.dbSync.run('Create TABLE if not exists answers (idAnswer Integer primary key AUTOINCREMENT , ' +
-                'content TEXT UNIQUE)');
+        me.dbSync.run('Create TABLE if not exists answers (idAnswer Integer primary key AUTOINCREMENT , ' +
+            'content TEXT UNIQUE)');
 
-            me.dbSync.run('Create TABLE if not exists themes (idTheme Integer primary key AUTOINCREMENT , ' +
-                'name TEXT UNIQUE)');
+        me.dbSync.run('Create TABLE if not exists themes (idTheme Integer primary key AUTOINCREMENT , ' +
+            'name TEXT UNIQUE)');
 
-            me.dbSync.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
-                'idUser Integer, ' +
-                'idQuest Integer, ' +
-                'idAnswer Integer, ' +
-                'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
-                'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
+        me.dbSync.run('Create TABLE if not exists results   (idResult Integer primary key AUTOINCREMENT , ' +
+            'idUser Integer, ' +
+            'idQuest Integer, ' +
+            'idAnswer Integer, ' +
+            'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
+            'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
 
-            me.dbSync.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
+
+        me.dbSync.run('Create TABLE if not exists admins (idAdmin Integer primary key AUTOINCREMENT , ' +
+            'login TEXT, ' +
+            'password TEXT');
+
+
+        me.dbSync.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
                 '   AFTER INSERT ON results ' +
                 'BEGIN\n' +
                 ' update users \n' +
@@ -59,74 +66,17 @@ class DataBase{
 
         me.initAllData();
     };
-
     initAllData(){
         this.initDataThemes(this);
         this.initDataAnswers(this);
         this.initDataQuestions(this);
         this.initDataPositions(this);
-    }
-
-    returnUserById(userId){
-        let me = this;
-        console.log(me.dbSync.run('SELECT * FROM users where idUser = ' + userId)[0]);
-    }
-
-    returnQusetionByUserId(userId){
-        let me = this, questions, returnResult = [];
-        let answerIdArr = [], answerArr = [];
-        let results = me.dbSync.run(`select idQuest, idAnswer from results where results.idUser = ${userId}`);
-        for(let i = 0 ; i < results.length; i++) {
-
-            questions = me.dbSync.run('SELECT * FROM questions where idQuest = ' + results[i].idQuest)[0];
-            returnResult[i] = {};
-            returnResult[i].content1 = questions.content1;
-            returnResult[i].content2 = questions.content2;
-            returnResult[i].idRightAnswer = questions.idRightAnswer;
-            returnResult[i].idAnswer = results[i].idAnswer;
-
-            answerIdArr.push(questions.idAnswer1);
-            answerIdArr.push(questions.idAnswer2);
-            answerIdArr.push(questions.idAnswer3);
-            answerIdArr.push(questions.idAnswer4);
-            answerIdArr.push(questions.idAnswer5);
-            answerIdArr.push(questions.idAnswer6);
-            answerIdArr.push(questions.idAnswer7);
-
-
-            answerArr.push(me.returnAnswerById(questions.idAnswer1));
-            answerArr.push(me.returnAnswerById(questions.idAnswer2));
-            answerArr.push(me.returnAnswerById(questions.idAnswer3));
-            answerArr.push(me.returnAnswerById(questions.idAnswer4));
-            answerArr.push(me.returnAnswerById(questions.idAnswer5));
-            answerArr.push(me.returnAnswerById(questions.idAnswer6));
-            answerArr.push(me.returnAnswerById(questions.idAnswer7));
-
-            answerArr = answerArr.filter(function (el) {
-                return el != null;
-            });
-            answerIdArr = answerIdArr.filter(function (el) {
-                return el != null;
-            });
-
-            returnResult[i].arrAnswers = answerArr;
-            returnResult[i].answerIdArr = answerIdArr;
-            answerIdArr = [];
-            answerArr = [];
-        }
-        return returnResult
-    }
-    initDataThemes() {//answers
-        let me = this;
-        me.insertValue('themes', 'JavaScript');
-        me.insertValue('themes', 'ООП');
-        me.insertValue('themes', 'HTML');
-    }
+    };
     initDataPositions() {//answers
         let me = this;
         me.insertValue('positions', 'Техник-программист');
         me.insertValue('positions', 'Инженер-программист');
-    }
+    };
     initDataAnswers(){//answers
         let me = this;
         me.insertValue('answers','Другое.');
@@ -464,6 +414,63 @@ class DataBase{
         me.insertValue('questions','Как сделать кнопку для отправки формы?',null,198,199,200,171,null,null,null,198,3);//
 
     };
+
+    returnUserById(userId){
+        let me = this;
+        console.log(me.dbSync.run('SELECT * FROM users where idUser = ' + userId)[0]);
+    }
+
+    returnQusetionByUserId(userId){
+        let me = this, questions, returnResult = [];
+        let answerIdArr = [], answerArr = [];
+        let results = me.dbSync.run(`select idQuest, idAnswer from results where results.idUser = ${userId}`);
+        for(let i = 0 ; i < results.length; i++) {
+
+            questions = me.dbSync.run('SELECT * FROM questions where idQuest = ' + results[i].idQuest)[0];
+            returnResult[i] = {};
+            returnResult[i].content1 = questions.content1;
+            returnResult[i].content2 = questions.content2;
+            returnResult[i].idRightAnswer = questions.idRightAnswer;
+            returnResult[i].idAnswer = results[i].idAnswer;
+
+            answerIdArr.push(questions.idAnswer1);
+            answerIdArr.push(questions.idAnswer2);
+            answerIdArr.push(questions.idAnswer3);
+            answerIdArr.push(questions.idAnswer4);
+            answerIdArr.push(questions.idAnswer5);
+            answerIdArr.push(questions.idAnswer6);
+            answerIdArr.push(questions.idAnswer7);
+
+
+            answerArr.push(me.returnAnswerById(questions.idAnswer1));
+            answerArr.push(me.returnAnswerById(questions.idAnswer2));
+            answerArr.push(me.returnAnswerById(questions.idAnswer3));
+            answerArr.push(me.returnAnswerById(questions.idAnswer4));
+            answerArr.push(me.returnAnswerById(questions.idAnswer5));
+            answerArr.push(me.returnAnswerById(questions.idAnswer6));
+            answerArr.push(me.returnAnswerById(questions.idAnswer7));
+
+            answerArr = answerArr.filter(function (el) {
+                return el != null;
+            });
+            answerIdArr = answerIdArr.filter(function (el) {
+                return el != null;
+            });
+
+            returnResult[i].arrAnswers = answerArr;
+            returnResult[i].answerIdArr = answerIdArr;
+            answerIdArr = [];
+            answerArr = [];
+        }
+        return returnResult
+    }
+    initDataThemes() {//answers
+        let me = this;
+        me.insertValue('themes', 'JavaScript');
+        me.insertValue('themes', 'ООП');
+        me.insertValue('themes', 'HTML');
+    }
+
     insertValue(tableName,...values){
         let me = this;
         values.unshift(null);
@@ -548,7 +555,7 @@ class DataBase{
 
         let me  = this;
         if(idAnswer === null) return null;
-        let answer =  me.dbSync.run('SELECT content FROM answers where idAnswer = ' + idAnswer)[0];
+        let answer =  me.dbSync.run(`SELECT content FROM answers where idAnswer = ${idAnswer}`)[0];
         // console.log(answer.content);
         return answer.content;
     }
