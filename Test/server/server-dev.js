@@ -157,3 +157,8 @@ app.post('/next',urlencodedP,function (req,res) {
     db.showAllDataFromTable('users');
     res.render('testpage',{data:data});
 });
+
+app.post('/admin', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+
+});
