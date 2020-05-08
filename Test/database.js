@@ -50,6 +50,7 @@ class DataBase{
             'FOREIGN KEY (idUser) REFERENCES users(idUser) ON DELETE CASCADE ON UPDATE CASCADE ' +
             'FOREIGN KEY (idQuest) REFERENCES questions(idQuest) ON DELETE CASCADE ON UPDATE CASCADE)');
 
+
         me.dbSync.run('Create TABLE if not exists admins (idAdmin Integer primary key AUTOINCREMENT , ' +
             'login TEXT, ' +
             'password TEXT');
@@ -63,7 +64,6 @@ class DataBase{
                 ' where idUser = NEW.idUser;\n' +
                 ' END');
         });
-
         me.initAllData();
     };
     initAllData(){
@@ -539,7 +539,7 @@ class DataBase{
             for(i = 0; i < results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
                 while(true) {
-                    randomId = me.getRandomInt(0,15);
+                    randomId = me.getRandomInt(1,16);
                     if(!arrId.includes(questions[randomId].idQuest)) break;
                 }
             }
