@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta http-equiv="content-type" content="text/html">
+    <meta charset="UTF-8">
+    <meta name = "viewport" content="width = device- width, initial-scale=1.0">
+    <meta http-equiv = "X-AU-Compatible" content="ie=edge">
+    <title>Вход для администраторов</title>
+    <link rel="stylesheet" type="text/css"  href="">
+    <link rel="stylesheet" href="../../css/rPageStyles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
+
+
+        });
+        function saveData(){
+            // выбираем на странице все элементы типа textarea и input
+            document.querySelectorAll('input').forEach(function(e) {
+                sessionStorage.setItem(e.name, e.value);
+            });
+
+        }
+    </script>
+
+</head>
+<body>
+<div id="wrapper">
+    <div id="registration_text">Вход для администратора</div>
+    <div id="input_data">
+        <form  action = "admin_reg" method="post">
+            <input id = "login" type="text" name = "login" placeholder="Логин" minlength="2" title = "Введите логин"><br>
+            <input id = "password" type="text" name = "password" placeholder="Пароль" minlength="2"  title = "Введите пароль"><br>
+            <button id = "subButton" type="submit" onclick="saveData()">Подтвердить</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

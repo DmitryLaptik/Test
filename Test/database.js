@@ -52,9 +52,8 @@ class DataBase{
 
 
         me.dbSync.run('Create TABLE if not exists admins (idAdmin Integer primary key AUTOINCREMENT , ' +
-            'login TEXT, ' +
-            'password TEXT');
-
+            'login TEXT unique, ' +
+            'password TEXT)');
 
         me.dbSync.run('CREATE TRIGGER IF NOT EXISTS addResTest \n' +
                 '   AFTER INSERT ON results ' +
@@ -63,7 +62,6 @@ class DataBase{
                 ' set countFinishQuest = countFinishQuest + 1 \n' +
                 ' where idUser = NEW.idUser;\n' +
                 ' END');
-        });
         me.initAllData();
     };
     initAllData(){
@@ -572,7 +570,23 @@ class DataBase{
 
     returnTestCount(userId){
         return  this.dbSync.run(`SELECT countFinishQuest FROM users where idUser = ${userId} `)[0].countFinishQuest;
+    }
+    getAllUserResults(){
+        let me = this;
+        return me.dbSync.run('SELECT fName, sName, testMark, theme from users');
+    }
 
+    checkAdminInTable(login, password){
+        let me = this, access = false;
+        let adminArr = me.dbSync.run('select login, password from admins');
+        let admin = {
+            login: login,
+            password: password,
+        };
+        adminArr.forEach((localAdmin) => {
+            if(localAdmin.login === admin.login && localAdmin.password === admin.password) access = true;
+        });
+        return access;
     }
 
     resetTestCount(userId, mark){
@@ -610,7 +624,6 @@ class DataBase{
     };
 }
 
-// let db = new DataBase();
 // console.log(db.showAllDataFromTable('users'));
 // console.log(db.selectIdFromPositions('JavaScript'));
 

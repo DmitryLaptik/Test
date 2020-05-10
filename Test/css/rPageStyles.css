@@ -66,6 +66,15 @@ button#subButton{
     position: relative;
     left: 13%;
 }
+button#admin_but{
+    position: relative;
+    left: 4%;
+}
+div#find_area{
+    position: relative;
+    left: 15%;
+    top:5%;
+}
 button{
     position: relative;
     border-radius: 25px;

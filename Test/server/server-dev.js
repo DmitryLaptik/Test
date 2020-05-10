@@ -158,7 +158,64 @@ app.post('/next',urlencodedP,function (req,res) {
     res.render('testpage',{data:data});
 });
 
-app.post('/admin', urlencodedP, function (req, res) {
-    if(!req.body) return res.sendStatus(400);
+app.get('/admin', function (req, res) {
+    res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html')
+});
 
+app.post('/admin_reg', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
+        else                   res.sendFile(PROJ_DIR + 'views/adminPages/administration.html');
+    }
+});
+
+app.post('/get_all', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+        else {
+            res.render('getAllResults', {usersData: db.getAllUserResults() });
+        }
+    }
+
+});
+
+app.post('/find_user', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+        else                   res.sendFile(PROJ_DIR + 'views/adminPages/findResult.html');
+
+    }
+
+});
+
+app.post('/find', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+        else {
+            let userId = db.returnUserId(req.body.firstName, req.body.secName, req.body.theme, db.selectIdFromPositions(req.body.position));
+            if (userId !== null) {
+                let result = db.calcUserResult(userId);
+                let data = {
+                    fName: req.body.firstName,
+                    sName: req.body.secName,
+                    theme: req.body.theme,
+                    position: req.body.position
+                };
+                data.result = result.toFixed(1).toString();
+                data.questResults = db.returnQusetionByUserId(userId);
+                res.render('findUser', {usersData: db.getAllUserResults()});
+            }
+            else{
+                res.sendFile(PROJ_DIR + 'views/adminPages/findResult.html');
+            }
+        }
+    }
 });
