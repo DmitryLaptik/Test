@@ -33,7 +33,6 @@ app.post('/',urlencodedP, (req, res) => {
         let result = db.calcUserResult(userId);
         db.updateUserMark(userId, result.toFixed(1));
         db.resetTestCount(userId, result.toFixed(1));
-        db.clearResultsUser(userId);
     }
 
     res.sendFile(PROJ_DIR + 'views/MainPage.html')
@@ -113,22 +112,13 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         answerIdArr.push(result.idAnswer6);
         answerIdArr.push(result.idAnswer7);
 
+        answerIdArr = answerIdArr.filter(function (el) { return el != null; });
+
+        answerIdArr = db.randSort(answerIdArr);
         let answerArr = [];
-
-        answerArr.push(db.returnAnswerById(result.idAnswer1));
-        answerArr.push(db.returnAnswerById(result.idAnswer2));
-        answerArr.push(db.returnAnswerById(result.idAnswer3));
-        answerArr.push(db.returnAnswerById(result.idAnswer4));
-        answerArr.push(db.returnAnswerById(result.idAnswer5));
-        answerArr.push(db.returnAnswerById(result.idAnswer6));
-        answerArr.push(db.returnAnswerById(result.idAnswer7));
-
-        answerArr = answerArr.filter(function (el) {
-            return el != null;
-        });
-        answerIdArr = answerIdArr.filter(function (el) {
-            return el != null;
-        });
+        for(let i = 0;i < answerIdArr.length;i++){
+            answerArr.push(db.returnAnswerById(answerIdArr[i]));
+        }
 
         let isNewResult = db.checkResult(userId, result.idQuest);
 
@@ -177,7 +167,8 @@ app.post('/get_all', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
         else {
-            res.render('getAllResults', {usersData: db.getAllUserResults() });
+            let data =  db.getAllUserResults();
+            res.render('getAllResults', {usersData: data });
         }
     }
 
@@ -197,25 +188,16 @@ app.post('/find_user', urlencodedP, function (req, res) {
 app.post('/find', urlencodedP, function (req, res) {
     if(!req.body) return res.sendStatus(400);
     else{
-        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
-        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
-        else {
-            let userId = db.returnUserId(req.body.firstName, req.body.secName, req.body.theme, db.selectIdFromPositions(req.body.position));
-            if (userId !== null) {
-                let result = db.calcUserResult(userId);
-                let data = {
-                    fName: req.body.firstName,
-                    sName: req.body.secName,
-                    theme: req.body.theme,
-                    position: req.body.position
-                };
-                data.result = result.toFixed(1).toString();
-                data.questResults = db.returnQusetionByUserId(userId);
-                res.render('findUser', {usersData: db.getAllUserResults()});
-            }
-            else{
-                res.sendFile(PROJ_DIR + 'views/adminPages/findResult.html');
-            }
+        let userId = db.returnUserId(req.body.firstName, req.body.secondName, req.body.theme, db.selectIdFromPositions(req.body.position));
+        if (userId !== null) {
+            let data = db.returnUserById(userId);
+            data.position = req.body.position;
+            data.questResults = db.returnQusetionByUserId(userId);
+            res.render('findUser', {usersData: data});
         }
+        else{
+            res.sendFile(PROJ_DIR + 'views/adminPages/findResult.html');
+        }
+
     }
 });

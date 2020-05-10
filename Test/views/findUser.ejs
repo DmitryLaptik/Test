@@ -10,13 +10,21 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body>
-<div id="wrapper">
+<div id="wrapper2">
     <table border="1">
         <tr>
-            <th>usersData.fName</th>
-            <th>usersData.sName</th>
-            <th>usersData.position</th>
-            <th>usersData.theme</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Желаемая должность</th>
+            <th>Тема теста</th>
+            <th>Оценка за теста</th>
+        </tr>
+        <tr>
+            <th><%=usersData.fName%></th>
+            <th><%=usersData.sName%></th>
+            <th><%=usersData.position%></th>
+            <th><%=usersData.theme%></th>
+            <th><%=usersData.testMark%></th>
         </tr>
     </table>
     <% for(let i = 0; i < usersData.questResults.length; i++) {%>
@@ -25,7 +33,7 @@
         <legend><%=usersData.questResults[i].content1%></legend>
         <pre><code><%=usersData.questResults[i].content2%></code></pre><br>
         <% for(let j = 0; j < usersData.questResults[i].arrAnswers.length; j++) {%>
-            <input type="radio" required name="answer" id="r<%= j+1%>" disabled = disabled><span style = " background-color:<% if(data.questResults[i].answerIdArr[j] == data.questResults[i].idRightAnswer){%> darkseagreen<%}else if(data.questResults[i].idAnswer == data.questResults[i].answerIdArr[j]){%>red<%}%>"><%= usersData.questResults[i].arrAnswers[j]%></span><br>
+            <input type="radio" required name="answer" id="r<%= j+1%>" disabled = disabled><span style = " background-color:<% if(usersData.questResults[i].answerIdArr[j] == usersData.questResults[i].idRightAnswer){%> darkseagreen<%}else if(usersData.questResults[i].idAnswer == usersData.questResults[i].answerIdArr[j]){%>red<%}%>"><%= usersData.questResults[i].arrAnswers[j]%></span><br>
         <%} %>
     </fieldset>
     <%} %>

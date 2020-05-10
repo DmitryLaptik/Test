@@ -10,6 +10,16 @@ body{ background-color: #caddda}
     max-width: 600px;
     margin: auto;
 }
+#wrapper2 {
+    background-color: lightblue;
+    padding-left: 10%;
+    padding-right: 10%;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    height: 100%;
+    width: 60%;
+    margin: auto;
+}
 #registration_text {
     background-color: #5555ff;
     border-bottom-left-radius: 15px;

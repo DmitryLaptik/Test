@@ -19,7 +19,7 @@
             <th>Тема теста</th>
         </tr>
         <% for(let i = 0; i < usersData.length; i++) {%>
-            <tr><td><% usersData[i].fName %></td><td><%usersData[i].sName %></td><td><% usersData[i].testMark %></td><td><% usersData[i].theme%></td></tr>
+            <tr><td><%= usersData[i].fName %></td><td><%=usersData[i].sName %></td><td><%=usersData[i].testMark %></td><td><%=usersData[i].theme%></td></tr>
         <%} %>
 
     </table>

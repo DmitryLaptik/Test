@@ -413,9 +413,14 @@ class DataBase{
 
     };
 
-    returnUserById(userId){
+    showUserById(userId){
         let me = this;
         console.log(me.dbSync.run('SELECT * FROM users where idUser = ' + userId)[0]);
+    }
+
+    (userId){
+        let me = this;
+        return me.dbSync.run('SELECT fName, sName, testMark, theme FROM users where idUser = ' + userId)[0];
     }
 
     returnQusetionByUserId(userId){
@@ -537,7 +542,7 @@ class DataBase{
             for(i = 0; i < results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
                 while(true) {
-                    randomId = me.getRandomInt(1,16);
+                    randomId = me.getRandomInt(0,questions.length);
                     if(!arrId.includes(questions[randomId].idQuest)) break;
                 }
             }
@@ -554,6 +559,16 @@ class DataBase{
         return answer.content;
     }
 
+    randSort(arr){
+        var j, temp;
+        for(var i = arr.length - 1; i > 0; i--){
+            j = Math.floor(Math.random()*(i + 1));
+            temp = arr[j];
+            arr[j] = arr[i];
+            arr[i] = temp;
+        }
+        return arr;
+    }
 
     checkResult(userId,questId){
         let me = this;
@@ -624,7 +639,9 @@ class DataBase{
     };
 }
 
-// console.log(db.showAllDataFromTable('users'));
+let db = new DataBase();
+
+db.showAllDataFromTable('results');
 // console.log(db.selectIdFromPositions('JavaScript'));
 
 //console.log(db.dbSync.run(`select * from questions join results on results.idQuest = questions.idQuest where results.idUser = 89 `));
