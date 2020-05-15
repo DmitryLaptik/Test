@@ -47,6 +47,7 @@ tr td:last-child {
 }
 table#resultTable{
     margin-left: -150px;
-    left:45%;
+    left:40%;
     position:relative;
+    max-width: 50%;
 }

@@ -120,10 +120,22 @@ div#find_area{
     left: 15%;
     top:5%;
 }
+div#find_area * {
+    margin-left: -150px;
+    width: 300px;
+    left: 42%;
+    position: relative;
+}
 button#prevPage{
     position: relative;
     top:5%;
     left:10%;
+    margin-left: -150px;
+}
+button#prevPage2{
+    position: relative;
+    margin-top: 3%;
+    left: 57%;
     margin-left: -150px;
 }
 /*button#findButton{*/

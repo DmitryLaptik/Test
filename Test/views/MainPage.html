@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script>
         function check() {
-            var re = `^[А-Я]+[а-я]{0,15}`;
+            var re = `^[А-Я]+[а-я]{2,15}`;
             let fName = document.getElementById('fName');
             let sName = document.getElementById('sName');
             let y = fName.value.match(re);
@@ -20,9 +20,10 @@
             if (!x)  sName.style.outline = "red solid 1px";
             else     sName.style.outline = "green solid 1px";
 
-            if (x && y) {
-                document.getElementById('subButton').disabled = false;
-            }
+            if (x && y) document.getElementById('subButton').disabled = false;
+            else        document.getElementById('subButton').disabled = true;
+
+
         }
         document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
             document.querySelectorAll('textarea, input').forEach(function(e) {

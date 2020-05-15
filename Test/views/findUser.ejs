@@ -29,6 +29,8 @@
             <td><%=usersData.testMark%></td>
         </tr>
     </table>
+    <button id='prevPage2' onclick="history.back(); return false;">Вернуться назад</button>
+
     <% for(let i = 0; i < usersData.questResults.length; i++) {%>
     <p>Вопрос <%=i+1%></p><br>
     <fieldset>
