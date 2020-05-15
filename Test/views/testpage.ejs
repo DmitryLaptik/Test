@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <title>Page 1</title>
     <link rel="shortcut icon" href="#">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../css/rPageStyles.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script>
         function activate(){
             let inp = document.getElementsByName('answer');
@@ -27,7 +27,6 @@
         }
     </script>
 </head>
-
 <body>
 <div id = "back">
 <p>Вопрос <%=testData.countFinishQuest%> из 15</p><br>
@@ -39,9 +38,11 @@
     <input type = "hidden" name = "idQuest" value = <%= testData.idQuest%>>
     <input type = "hidden" name = "idTheme" value = <%= testData.idTheme%>>
     <input type = "hidden" name = "answersIds" value = <%= testData.answersIds%>>
-    <% for(var i=0; i<testData.answers.length;i++) {%>
-    <input type="radio" required name="answer" id="r<%= i+1%>"  onclick="setAnswer(this)"><%= testData.answers[i]%><br>
-    <%} %>
+    <div id = "backAnswers">
+        <% for(var i=0; i<testData.answers.length;i++) {%>
+        <input type="radio" required name="answer" id="r<%= i+1%>" hidden = hidden onclick="setAnswer(this)"><label for="r<%= i+1%>"><%= testData.answers[i]%></label>
+        <%} %>
+    </div>
 </fieldset><br>
     <button id = "next" type="submit"  disabled = "disabled">Продолжить</button>
 </form>

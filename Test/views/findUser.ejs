@@ -5,13 +5,15 @@
     <meta name = "viewport" content="width = device- width, initial-scale=1.0">
     <meta http-equiv = "X-AU-Compatible" content="ie=edge">
     <title>Вход для администраторов</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../css/rPageStyles.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/tableStyle.css">
+
 </head>
 <body>
-<div id="wrapper2">
-    <table border="1">
+<div id="back">
+    <table id = "resultTable">
         <tr>
             <th>Фамилия</th>
             <th>Имя</th>
@@ -20,11 +22,11 @@
             <th>Оценка за теста</th>
         </tr>
         <tr>
-            <th><%=usersData.fName%></th>
-            <th><%=usersData.sName%></th>
-            <th><%=usersData.position%></th>
-            <th><%=usersData.theme%></th>
-            <th><%=usersData.testMark%></th>
+            <td><%=usersData.fName%></td>
+            <td><%=usersData.sName%></td>
+            <td><%=usersData.position%></td>
+            <td><%=usersData.theme%></td>
+            <td><%=usersData.testMark%></td>
         </tr>
     </table>
     <% for(let i = 0; i < usersData.questResults.length; i++) {%>
@@ -33,7 +35,7 @@
         <legend><%=usersData.questResults[i].content1%></legend>
         <pre><code><%=usersData.questResults[i].content2%></code></pre><br>
         <% for(let j = 0; j < usersData.questResults[i].arrAnswers.length; j++) {%>
-            <input type="radio" required name="answer" id="r<%= j+1%>" disabled = disabled><span style = " background-color:<% if(usersData.questResults[i].answerIdArr[j] == usersData.questResults[i].idRightAnswer){%> darkseagreen<%}else if(usersData.questResults[i].idAnswer == usersData.questResults[i].answerIdArr[j]){%>red<%}%>"><%= usersData.questResults[i].arrAnswers[j]%></span><br>
+            <input type="radio" required name="answer"  hidden = hidden id="r<%= j+1%>" disabled = disabled><label for = "r<%= j+1%>" style = " background-color:<% if(usersData.questResults[i].answerIdArr[j] == usersData.questResults[i].idRightAnswer){%> green<%}else if(usersData.questResults[i].idAnswer == usersData.questResults[i].answerIdArr[j]){%>red<%}%>"><%= usersData.questResults[i].arrAnswers[j]%></label><br>
         <%} %>
     </fieldset>
     <%} %>

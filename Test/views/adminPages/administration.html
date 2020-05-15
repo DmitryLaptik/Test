@@ -5,9 +5,9 @@
     <meta name = "viewport" content="width = device- width, initial-scale=1.0">
     <meta http-equiv = "X-AU-Compatible" content="ie=edge">
     <title>Вход для администраторов</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../../css/rPageStyles.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script>
         function saveData(){
         document.querySelectorAll('input, select').forEach(function(e) {
@@ -15,21 +15,28 @@
         });
         sessionStorage.clear();
     }
+    function clearData(){
+        sessionStorage.clear();
+        history.back(); return false;
+    }
     </script>
 </head>
 <body>
     <div id="wrapper">
-        <br>
-        <form action = "find_user" method="post" >
-            <input type = "hidden" name = "login">
-            <input type = "hidden" name = "password">
-            <button id = "findButton" type="submit" onclick="saveData()" >Найти результаты пользователя</button>
-        </form><br>
-        <form action = "get_all" method="post" >
-            <input type = "hidden" name = "login">
-            <input type = "hidden" name = "password">
-            <button id = "getButton" type="submit" onclick="saveData()" >Вывести результаты всех пользователей</button>
-        </form>
+        <div id = "adminButtons">
+            <br>
+            <form action = "find_user" method="post" >
+                <input type = "hidden" name = "login">
+                <input type = "hidden" name = "password">
+                <button id = "findButton" type="submit" onclick="saveData()" >Найти результаты пользователя</button>
+            </form><br>
+            <form action = "get_all" method="post" >
+                <input type = "hidden" name = "login">
+                <input type = "hidden" name = "password">
+                <button id = "getButton" type="submit" onclick="saveData()" >Вывести результаты всех пользователей</button>
+            </form>
+            <button id = "backBut" onclick="clearData()">Выйти</button>
+        </div>
     </div>
 </body>
 </html>

@@ -418,7 +418,7 @@ class DataBase{
         console.log(me.dbSync.run('SELECT * FROM users where idUser = ' + userId)[0]);
     }
 
-    (userId){
+    returnUserById(userId){
         let me = this;
         return me.dbSync.run('SELECT fName, sName, testMark, theme FROM users where idUser = ' + userId)[0];
     }
@@ -546,8 +546,14 @@ class DataBase{
                     if(!arrId.includes(questions[randomId].idQuest)) break;
                 }
             }
-        } else randomId = results[0].idQuest;
-
+        } else {
+            for(let i = 0; i<questions.length;i++){
+                if(questions[i].idQuest === results[0].idQuest){
+                    randomId = i;
+                    break;
+                }
+            }
+        }
         return questions[randomId];
     };
     returnAnswerById(idAnswer){

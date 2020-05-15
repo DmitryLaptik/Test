@@ -69,12 +69,13 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         console.log(req.body);
         userId = req.body.idUser;
     }
-
-    if (req.body.answer) {
-        let arrId = req.body.answersIds.split(',');
-        db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
-    }
     let countFinishQuest  = db.returnTestCount(Number(userId));
+    if (req.body.answer) {
+        if(countFinishQuest !== 15) {
+            let arrId = req.body.answersIds.split(',');
+            db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
+        }
+    }
     if(countFinishQuest >= 15){
         let text = [];
         text[0] = "Извините, с таким уровнем знаний вы нам не подходите.";

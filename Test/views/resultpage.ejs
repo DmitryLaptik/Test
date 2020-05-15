@@ -4,20 +4,20 @@
     <meta charset="utf-8">
     <title>Page 1</title>
     <link rel="shortcut icon" href="#">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../css/rPageStyles.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
 </head>
 
 <body>
 <div id = "back">
-<form action="/" method="post">
     <p>Ваш результат <%=data.result%>%</p>
     <p><%=data.resultAnswer%></p><br>
     <input type = "hidden" name = "userId" value = <%=data.userId%>>
-    <button id = "next" type="submit">Вернуться назад</button>
-</form>
+    <form action="/" method="post">
+        <button id = "next" type="submit">Вернуться назад</button>
+    </form>
 
     <% for(let i = 0; i < data.questResults.length; i++) {%>
         <p>Вопрос <%=i+1%></p><br>
@@ -25,7 +25,7 @@
             <legend><%=data.questResults[i].content1%></legend>
             <pre><code><%=data.questResults[i].content2%></code></pre><br>
             <% for(let j = 0; j < data.questResults[i].arrAnswers.length; j++) {%>
-                <input type="radio" required name="answer" id="r<%= j+1%>" disabled = disabled><span style = " background-color:<% if(data.questResults[i].answerIdArr[j] == data.questResults[i].idRightAnswer){%> darkseagreen<%}else if(data.questResults[i].idAnswer == data.questResults[i].answerIdArr[j]){%>red<%}%>"><%= data.questResults[i].arrAnswers[j]%></span><br>
+                <input type="radio" required name="answer"  hidden = hidden id="r<%= j+1%>" disabled = disabled><label for = "r<%= j+1%>" style = " background-color:<% if(data.questResults[i].answerIdArr[j] == data.questResults[i].idRightAnswer){%> green<%}else if(data.questResults[i].idAnswer == data.questResults[i].answerIdArr[j]){%>red<%}%>"><%= data.questResults[i].arrAnswers[j]%></label><br>
             <%} %>
         </fieldset>
     <%} %>
