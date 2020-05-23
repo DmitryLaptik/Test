@@ -10,6 +10,27 @@ body{ background-color: #ffffff}
     max-width: 1000px;
     margin: auto;
 }
+#wrapper3 {
+    background-color: skyblue;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-top: 3%;
+    padding-bottom: 3%;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    height: 100%;
+    max-width: 1000px;
+    margin: auto;
+    max-height: 100%;
+
+}
+#newQuest{
+    margin-left: -150px;
+    position: relative;
+    width:100%;
+    top: 5%;
+    left: 50%;
+}
 #wrapper2 {
     background-color: lightblue;
     padding-left: 10%;
@@ -28,7 +49,13 @@ body{ background-color: #ffffff}
     font: 28px 'Oswald', Arial bold;
     padding: 10px;
 }
-
+textarea{
+    width: 50%;
+    height: 100px;
+    resize: none;
+    border-radius: 10px;
+    border: 0px;
+}
 #input_data {
     margin-left: -150px;
     position: relative;

@@ -13,7 +13,6 @@
         document.querySelectorAll('input, select').forEach(function(e) {
             if(e.value === '') e.value = sessionStorage.getItem(e.name);
         });
-        sessionStorage.clear();
     }
     function clearData(){
         sessionStorage.clear();
@@ -24,16 +23,16 @@
 <body>
     <div id="wrapper">
         <div id = "adminButtons">
-            <br>
-            <form action = "find_user" method="post" >
-                <input type = "hidden" name = "login">
-                <input type = "hidden" name = "password">
-                <button id = "findButton" type="submit" onclick="saveData()" >Найти результаты пользователя</button>
-            </form><br>
+           <br>
             <form action = "get_all" method="post" >
                 <input type = "hidden" name = "login">
                 <input type = "hidden" name = "password">
-                <button id = "getButton" type="submit" onclick="saveData()" >Вывести результаты всех пользователей</button>
+                <button type="submit" onclick="saveData()" >Вывести результаты всех пользователей</button>
+            </form>
+            <form action = "addNew" method="post" >
+                <input type = "hidden" name = "login">
+                <input type = "hidden" name = "password">
+                <button type="submit" onclick="saveData()" >Добавить вопрос</button>
             </form>
             <button id = "backBut" onclick="clearData()">Выйти</button>
         </div>

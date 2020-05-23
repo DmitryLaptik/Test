@@ -423,6 +423,11 @@ class DataBase{
         return me.dbSync.run('SELECT fName, sName, testMark, theme FROM users where idUser = ' + userId)[0];
     }
 
+    returnPositionById(positionId){
+        let me = this;
+        return me.dbSync.run(`SELECT name FROM positions where idPosition = ${positionId} ` )[0].name;
+    }
+
     returnQusetionByUserId(userId){
         let me = this, questions, returnResult = [];
         let answerIdArr = [], answerArr = [];
@@ -479,8 +484,17 @@ class DataBase{
         values.unshift(null);
         let placeholders = values.map((value) => '?').join(',');
         var last_insert_id = me.dbSync.run(`INSERT INTO ${tableName} VALUES (${placeholders})`,values);
+        return last_insert_id;
     };
 
+    insertAndReturnId(tableName,...values){
+        let me = this;
+        values.unshift(null);
+        let placeholders = values.map((value) => '?').join(',');
+        var last_insert_id = me.dbSync.run(`INSERT INTO ${tableName} VALUES (${placeholders})`,values);
+        if(last_insert_id) return last_insert_id;
+
+    };
     updateResult(tableName, userId, questId,result){
         var last_insert_id = this.dbSync.run(`UPDATE ${tableName} set idAnswer = ${result} where idUser = ${userId} and idQuest = ${questId}`);
         console.log(this.dbSync.run(`SELECT *  FROM ${tableName}  where idUser = ${userId} and idQuest = ${questId}`))
@@ -502,7 +516,52 @@ class DataBase{
         }
         else return null;
     }
+    checkAnswer(content){
+        return this.dbSync.run(`select * from answers where content = '${content}'`).length < 1;
+    }
+    selectAllThemesForTest(){
+        let me = this, themes = [];
+        let  allThemes = me.dbSync.run('select idTheme from themes');
+        for(let i = 0; i < allThemes.length; i++){
+            let countQuest = me.dbSync.run(`select idQuest from questions where idTheme = ${allThemes[i].idTheme} `).length;
+            if(countQuest >=15){
+                themes.push(me.selectThemeNameById(allThemes[i].idTheme));
+            }
+        }
+        return themes;
+    }
 
+    selectAllThemes(){
+        return this.dbSync.run('select name from themes');
+    }
+
+    createNewQuestion(context1, context2, answers, idRightAnswer, theme) {
+        let arrAnswersId = [];
+        if(this.checkQuestion(context1,context2)){
+            for (let i = 0; i < answers.length; i++) {
+                if (answers[i] !== undefined && answers[i].length > 0) {
+                    if (this.checkAnswer(answers[i]) === true)
+                        arrAnswersId.push(this.insertAndReturnId('answers', answers[i]));
+                    else
+                        arrAnswersId.push(this.dbSync.run(`select idAnswer from answers where content = '${answers[i]}'`)[0].idAnswer);
+                } else {
+                    arrAnswersId.push(null);
+                }
+            }
+            theme = this.selectIdFromThemes(theme);
+            if (context2.length < 1) context2 = null;
+
+            console.log(this.insertValue('questions', context1, context2, arrAnswersId[0], arrAnswersId[1], arrAnswersId[2], arrAnswersId[3], arrAnswersId[4], arrAnswersId[5], arrAnswersId[6], arrAnswersId[idRightAnswer], theme));
+        }
+    }
+
+    checkQuestion(context1,context2){
+        return this.dbSync.run(`select * from questions where context1 = '${context1}' and context2 = '${context2}'`).length < 1;
+    }
+
+    selectThemeNameById(idTheme) {
+        return this.dbSync.run(`select name from themes where idTheme = ${idTheme}`)[0];
+    }
     showAllDataFromTable(table){
         let me = this;
         let result = me.dbSync.run(`SELECT * FROM  ${table}`);
@@ -535,9 +594,9 @@ class DataBase{
 
         let me = this, arrId = [], randomId = null, i;
         let questions =  me.dbSync.run(`SELECT * FROM questions where idTheme = ${themeId}`);
-        let results = me.dbSync.run(`SELECT idQuest FROM results where idUser =  '${userId}' and idAnswer IS NULL`);
+        let results = me.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser =  '${userId}' and idTheme = ${themeId} and idAnswer IS NULL`);
         if(results.length === 0) {
-            results = me.dbSync.run(`SELECT idQuest FROM results where idUser =  '${userId}'`);
+            results = me.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser =  '${userId}' and idTheme = ${themeId}`);
 
             for(i = 0; i < results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
@@ -556,6 +615,11 @@ class DataBase{
         }
         return questions[randomId];
     };
+
+    getCountResult(userId,themeId){
+        let results = this.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser =  '${userId}' and idTheme = ${themeId}`);
+        return results.length;
+    }
     returnAnswerById(idAnswer){
 
         let me  = this;
@@ -594,7 +658,7 @@ class DataBase{
     }
     getAllUserResults(){
         let me = this;
-        return me.dbSync.run('SELECT fName, sName, testMark, theme from users');
+        return me.dbSync.run('SELECT fName, sName, idPosition, testMark, theme from users');
     }
 
     checkAdminInTable(login, password){
@@ -640,24 +704,10 @@ class DataBase{
         return count/countAllQuestions * 100;
     }
 
-    DBClose(){
-      this.db.close();
-    };
 }
 
 let db = new DataBase();
-
-db.showAllDataFromTable('results');
-// console.log(db.selectIdFromPositions('JavaScript'));
-
-//console.log(db.dbSync.run(`select * from questions join results on results.idQuest = questions.idQuest where results.idUser = 89 `));
-//db.returnQusetionByUserId(89);
-//console.log(db.dbSync.run(`select * from results  where results.idUser = 86 `));
-//db.clearResultsUser(74);
-// db.calcUserResult(62);
-//db.resetTestCount(80,33.3);
-//let result = db.dbSync.run(`SELECT * FROM users where idUser = 80`);
-//console.log(result)
+console.log(db.checkQuestion('Что выведет консоль?',"let i = 0; \r\ni.content = 'hello'\r\nconsole.log(i.content);"));
 exports = module.exports;
 
 exports.DataBase = DataBase;

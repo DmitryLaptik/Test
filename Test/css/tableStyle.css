@@ -45,9 +45,20 @@ tr:last-child td:last-child {
 tr td:last-child {
     border-right: none;
 }
-table#resultTable{
+table#resultOneTable{
     margin-left: -150px;
     left:40%;
     position:relative;
     max-width: 50%;
+}
+table#resultTable{
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 14px;
+    border-radius: 10px;
+    text-align: center;
+    margin-left: -150px;
+    left: 15%;
+    position: relative;
+    border: 0px solid #666;
+    margin-top: 3%;
 }

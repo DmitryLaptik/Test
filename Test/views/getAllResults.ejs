@@ -11,17 +11,26 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body>
-<div id="wrapper">
+<div id="wrapper3">
     <button id='prevPage' onclick="history.back(); return false;">Вернуться назад</button>
-    <table border="1">
+    <table id = "resultTable" border="1">
         <tr>
             <th>Фамилия</th>
             <th>Имя</th>
+            <th>Желаемая должность</th>
             <th>Оценка</th>
             <th>Тема теста</th>
         </tr>
         <% for(let i = 0; i < usersData.length; i++) {%>
-            <tr><td><%= usersData[i].fName %></td><td><%=usersData[i].sName %></td><td><%=usersData[i].testMark %></td><td><%=usersData[i].theme%></td></tr>
+            <tr><td><%= usersData[i].fName %></td><td><%=usersData[i].sName %></td><td><%=usersData[i].position %></td><td><%=usersData[i].testMark %></td><td><%=usersData[i].theme%></td><td>
+                    <form action="find" method="post" >
+                        <input type = "hidden" name = "firstName" value = "<%= usersData[i].fName %>">
+                        <input type = "hidden" name = "secondName" value = "<%=usersData[i].sName %>">
+                        <input type = "hidden" name = "position" value = "<%=usersData[i].position %>">
+                        <input type = "hidden" name = "theme" value = "<%=usersData[i].theme%>">
+                        <button name = "choose" type="submit" >Посмотреть тест</button>
+                    </form>
+                </td></tr>
         <%} %>
     </table>
 </div>
