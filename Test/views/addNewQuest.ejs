@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta http-equiv="content-type" content="text/html">
+    <meta charset="UTF-8">
+    <meta name = "viewport" content="width = device- width, initial-scale=1.0">
+    <meta http-equiv = "X-AU-Compatible" content="ie=edge">
+    <title>Добавить вопрос</title>
+    <link rel="stylesheet" type="text/css"  href="">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/rPageStyles.css">
+    <link rel="stylesheet" href="../css/tableStyle.css">
+    <script>
+        function activate(){
+            let inp = document.getElementsByName('answer');
+            let textareas = document.getElementsByTagName('textarea');
+            if(textareas[0].value.length == 0 ) return;
+            else{
+                let counter = 0;
+                for(let i = 2; i < textareas.length;i++){
+                    if(textareas[i].value.length !== 0 ){
+                        counter++;
+                    }
+                }
+                if(counter < 3) return;
+            }
+            for (let i = 0; i < inp.length; i++) {
+                if (inp[i].type === "radio" && inp[i].checked) {
+                    document.getElementById('next').disabled = false;
+                }
+            }
+        }
+        function newTextArea(){
+            let textareas = document.getElementsByTagName('textarea');
+            let counter = 0;
+            let inp = document.getElementsByName('answer');
+            for(let i = 2; i < textareas.length; i++) {
+                if(textareas[i].value.length > 0 ) {
+                    if(i+1 < textareas.length)
+                    textareas[i+1].disabled = false;
+                    inp[i-1].disabled = false;
+                }else{
+                    for(let j = i+1; j < textareas.length;j++){
+                        textareas[j].disabled = true;
+                        textareas[j].value = "";
+                        inp[j-2].disabled = true;
+                        inp[j-2].checked = false;
+
+                    }
+                }
+            }
+        }
+        function setAnswer(input) {
+            for(let i = 1; i <=6;i++){
+                let el = document.getElementById('r' + i);
+                if(el.id !== input.id) el.value = "off";
+                else {
+                    activate();
+                    input.value = i-1;
+                }
+
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('textarea, input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
+
+        });
+        function saveData(){
+            document.querySelectorAll('input, select').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name);
+            });
+            sessionStorage.clear();
+        }
+    </script>
+</head>
+<body>
+<div id="wrapper3">
+    <button id='prevPage' onclick="history.back(); return false;">Вернуться назад</button>
+    <form  action="add" id = "newQuest" method="post">
+        <input type = "hidden" name = "login">
+        <input type = "hidden" name = "password">
+        <span style="left: 10%; position: relative">Тема вопроса<select name = "theme">
+                <% for(let j = 0; j < data.length; j++) {%>
+                    <option value = "<%= data[j].name%>"><%= data[j].name%></option>
+                <%}%>
+        </select></span><br>
+        <textarea  name = "context1" placeholder="Вопрос" minlength="2" ></textarea><br>
+        <textarea  name = "context2" placeholder="Код (если надо)" minlength="2" ></textarea><br>
+        <textarea  name = "answer1" placeholder="Ответ 1" minlength="1" onchange="newTextArea()"  onkeyup="newTextArea()" ></textarea><input type="radio" id="r1" name="answer" onclick="setAnswer(this)" style="height: 80px"><br>
+        <textarea  name = "answer2" placeholder="Ответ 2" minlength="1" onchange="newTextArea()"  onkeyup="newTextArea()" disabled = disabled></textarea><input type="radio" id="r2" name="answer" onclick="setAnswer(this)" style="height: 80px"><br>
+        <textarea  name = "answer3" placeholder="Ответ 3" minlength="1" onchange="newTextArea()"  onkeyup="newTextArea()" disabled = disabled></textarea><input type="radio" id="r3" name="answer" onclick="setAnswer(this)" style="height: 80px"><br>
+        <textarea  name = "answer4" placeholder="Ответ 4" minlength="1" onchange="newTextArea()"  onkeyup="newTextArea()" disabled = disabled></textarea><input disabled = disabled type="radio" id="r4" name="answer" onclick="setAnswer(this)" style="height: 80px"><br>
+        <textarea  name = "answer5" placeholder="Ответ 5" minlength="1" onchange="newTextArea()"  onkeyup="newTextArea()" disabled = disabled></textarea><input disabled = disabled type="radio" id="r5" name="answer" onclick="setAnswer(this)" style="height: 80px"><br>
+        <textarea  name = "answer6" placeholder="Ответ 6" minlength="1" onchange="newTextArea()"  onkeyup="newTextArea()" disabled = disabled></textarea><input disabled = disabled type="radio" id="r6" name="answer" onclick="setAnswer(this)" style="height: 80px"><br>
+        <textarea  name = "answer7" placeholder="Ответ 7" minlength="1" onchange="newTextArea()"  onkeyup="newTextArea()" disabled = disabled></textarea><input disabled = disabled type="radio" id="r7" name="answer" onclick="setAnswer(this)" style="height: 80px"><br>
+
+        <button id = "next" type="submit" title = "Минимум 1 содержание вопроса и минимум 3 ответа" disabled = disabled style = "left:20%" onclick="saveData()">Добавить</button>
+    </form>
+</div>
+</body>
+</html>
