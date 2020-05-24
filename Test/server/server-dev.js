@@ -65,15 +65,12 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     }
     let countFinishQuest  = db.returnTestCount(Number(userId));
     if (req.body.answer) {
-        if(countFinishQuest !== 15) {
+        if(countFinishQuest <= 15) {
             let arrId = req.body.answersIds.split(',');
             db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
         }
     }
-    if(countFinishQuest >= 15 || db.getCountResult(userId, idPosition)){
-        let text = [];
-        text[0] = "Извините, с таким уровнем знаний вы нам не подходите.";
-        text[1] = "Поздравляем! Вы нам подходите!";
+    if(countFinishQuest >= 15 || db.getCountResult(userId, req.body.idTheme) >= 15){
         let result = db.calcUserResult(userId);
         let data = {};
         data.result =  result.toFixed(1).toString();
@@ -81,16 +78,6 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         db.resetTestCount(userId, result.toFixed(1));
         let position = db.selectIdPositionsFromUsers(userId);
         data.questResults = db.returnQusetionByUserId(userId);
-        data.resultAnswer = '';
-        if(position == 1) {
-            if(data.result >=50)    data.resultAnswer = text[1];
-            else                    data.resultAnswer = text[0];
-        }
-        if(position == 2) {
-            if(data.result >=80)    data.resultAnswer = text[1];
-            else                    data.resultAnswer = text[0];
-        }
-
         data.userId = userId;
 
         res.render('resultpage', {data:data});
@@ -156,45 +143,6 @@ app.post('/admin_reg', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
         else                   res.sendFile(PROJ_DIR + 'views/adminPages/administration.html');
-    }
-});
-
-app.post('/addNew', urlencodedP, function (req, res) {
-    if(!req.body) return res.sendStatus(400);
-    else{
-        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
-        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
-        else {
-            let themes = db.selectAllThemes();
-            res.render('addNewQuest',{data: themes});
-        }
-    }
-});
-
-app.post('/add', urlencodedP, function (req, res) {
-    if(!req.body) return res.sendStatus(400);
-    else{
-        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
-        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
-        else {
-            let newQuest = {
-                context1 :req.body.context1,
-                context2 :req.body.context2,
-                answers :[]
-            };
-            newQuest.answers.push(req.body.answer1);
-            newQuest.answers.push(req.body.answer2);
-            newQuest.answers.push(req.body.answer3);
-            newQuest.answers.push(req.body.answer4);
-            newQuest.answers.push(req.body.answer5);
-            newQuest.answers.push(req.body.answer6);
-            newQuest.answers.push(req.body.answer7);
-            newQuest.idRightAnswer = Number(req.body.answer);
-            newQuest.idTheme = req.body.theme;
-            db.createNewQuestion(newQuest.context1, newQuest.context2,newQuest.answers,newQuest.idRightAnswer,newQuest.idTheme);
-            let themes = db.selectAllThemes();
-            res.render('addNewQuest',{data: themes});
-        }
     }
 });
 
