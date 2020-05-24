@@ -65,15 +65,12 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
     }
     let countFinishQuest  = db.returnTestCount(Number(userId));
     if (req.body.answer) {
-        if(countFinishQuest !== 15) {
+        if(countFinishQuest <= 15) {
             let arrId = req.body.answersIds.split(',');
             db.updateResult('results', userId, req.body.idQuest, arrId[Number(req.body.answer)]);
         }
     }
-    if(countFinishQuest >= 15 || db.getCountResult(userId, idPosition)){
-        let text = [];
-        text[0] = "Извините, с таким уровнем знаний вы нам не подходите.";
-        text[1] = "Поздравляем! Вы нам подходите!";
+    if(countFinishQuest >= 15 || db.getCountResult(userId, req.body.idTheme) >= 15){
         let result = db.calcUserResult(userId);
         let data = {};
         data.result =  result.toFixed(1).toString();
@@ -81,16 +78,6 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         db.resetTestCount(userId, result.toFixed(1));
         let position = db.selectIdPositionsFromUsers(userId);
         data.questResults = db.returnQusetionByUserId(userId);
-        data.resultAnswer = '';
-        if(position == 1) {
-            if(data.result >=50)    data.resultAnswer = text[1];
-            else                    data.resultAnswer = text[0];
-        }
-        if(position == 2) {
-            if(data.result >=80)    data.resultAnswer = text[1];
-            else                    data.resultAnswer = text[0];
-        }
-
         data.userId = userId;
 
         res.render('resultpage', {data:data});
@@ -216,7 +203,6 @@ app.post('/get_all', urlencodedP, function (req, res) {
 });
 
 
-
 app.post('/find', urlencodedP, function (req, res) {
     if(!req.body) return res.sendStatus(400);
     else{
@@ -231,5 +217,214 @@ app.post('/find', urlencodedP, function (req, res) {
             res.sendFile(PROJ_DIR + 'views/adminPages/MainPage.html');
         }
 
+    }
+});
+
+
+
+app.post('/updateQuest', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else {
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if (isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+        else {
+            let idQuest = (req.body.idQuest === undefined) ? "1" : req.body.idQuest;
+            let maxId = db.returnMaxQuestId();
+            if(Number(idQuest) > maxId) idQuest = maxId;
+            else if(Number(idQuest) < 0) idQuest = 0;
+            let questionData = db.returnQuestionById(idQuest);
+            let data = {
+                idQuest: idQuest,
+                context1: questionData.content1,
+                context2: questionData.content2,
+                idRightAnswer: questionData.idRightAnswer
+            };
+
+            let answerIdArr = [];
+            answerIdArr.push(questionData.idAnswer1);
+            answerIdArr.push(questionData.idAnswer2);
+            answerIdArr.push(questionData.idAnswer3);
+            answerIdArr.push(questionData.idAnswer4);
+            answerIdArr.push(questionData.idAnswer5);
+            answerIdArr.push(questionData.idAnswer6);
+            answerIdArr.push(questionData.idAnswer7);
+
+            let themes = db.selectAllThemes();
+
+            let answerArr = [];
+            for(let i = 0;i < answerIdArr.length;i++){
+                if(answerIdArr[i])
+                    answerArr.push(db.returnAnswerById(answerIdArr[i]));
+                else
+                    answerArr.push('');
+            }
+            data.answers = answerArr;
+            data.themes = themes;
+            res.render('updateQuestion', {data: data});
+        }
+    }
+});
+
+app.post('/update', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+        else {
+            let idQuest = (req.body.idQuest === undefined) ? "1" : req.body.idQuest;
+            let maxId = db.returnMaxQuestId();
+            if(Number(idQuest) > maxId) idQuest = maxId;
+            else if(Number(idQuest) < 0) idQuest = 0;
+            let newQuest = {
+                idQuest: idQuest,
+                context1: req.body.context1,
+                context2: req.body.context2,
+                answers: []
+            };
+            newQuest.answers.push(req.body.answer1);
+            newQuest.answers.push(req.body.answer2);
+            newQuest.answers.push(req.body.answer3);
+            newQuest.answers.push(req.body.answer4);
+            newQuest.answers.push(req.body.answer5);
+            newQuest.answers.push(req.body.answer6);
+            newQuest.answers.push(req.body.answer7);
+            newQuest.idRightAnswer = Number(req.body.answer);
+            newQuest.idTheme = req.body.theme;
+            db.updateQuestion(idQuest,newQuest.context1, newQuest.context2,newQuest.answers,newQuest.idRightAnswer,newQuest.idTheme);
+            let themes = db.selectAllThemes();
+            newQuest.themes = themes;
+            res.render('updateQuestion', {data: newQuest });
+        }
+    }
+});
+
+app.post('/delete', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+        else {
+            let isValid = true, idQuest;
+            if(req.body.idQuest === undefined) {
+                isValid = false;
+                idQuest = "1";
+            }else{
+                idQuest = req.body.idQuest;
+            }
+
+            let maxId = db.returnMaxQuestId();
+            if(Number(idQuest) > maxId) {
+                idQuest = maxId;
+            }
+            else if(Number(idQuest) < 0) {
+                idQuest = 0;
+            }
+            if(!isValid){
+                let questionData = db.returnQuestionById(1);
+                let data = {
+                    idQuest: 1,
+                    context1: questionData.content1,
+                    context2: questionData.content2,
+                    idRightAnswer: questionData.idRightAnswer
+                };
+
+                let answerIdArr = [];
+                answerIdArr.push(questionData.idAnswer1);
+                answerIdArr.push(questionData.idAnswer2);
+                answerIdArr.push(questionData.idAnswer3);
+                answerIdArr.push(questionData.idAnswer4);
+                answerIdArr.push(questionData.idAnswer5);
+                answerIdArr.push(questionData.idAnswer6);
+                answerIdArr.push(questionData.idAnswer7);
+
+                let themes = db.selectAllThemes();
+
+                let answerArr = [];
+                for(let i = 0;i < answerIdArr.length;i++){
+                    if(answerIdArr[i])
+                        answerArr.push(db.returnAnswerById(answerIdArr[i]));
+                    else
+                        answerArr.push('');
+                }
+                data.answers = answerArr;
+                data.themes = themes;
+                res.render('deleteQuestion', {data: data});
+            }
+            else{
+                db.deleteQuestionById(idQuest);
+                let questionData = db.returnQuestionById(1);
+                let data = {
+                    idQuest: 1,
+                    context1: questionData.content1,
+                    context2: questionData.content2,
+                    idRightAnswer: questionData.idRightAnswer
+                };
+
+                let answerIdArr = [];
+                answerIdArr.push(questionData.idAnswer1);
+                answerIdArr.push(questionData.idAnswer2);
+                answerIdArr.push(questionData.idAnswer3);
+                answerIdArr.push(questionData.idAnswer4);
+                answerIdArr.push(questionData.idAnswer5);
+                answerIdArr.push(questionData.idAnswer6);
+                answerIdArr.push(questionData.idAnswer7);
+
+                let themes = db.selectAllThemes();
+
+                let answerArr = [];
+                for(let i = 0;i < answerIdArr.length;i++){
+                    if(answerIdArr[i])
+                        answerArr.push(db.returnAnswerById(answerIdArr[i]));
+                    else
+                        answerArr.push('');
+                }
+                data.answers = answerArr;
+                data.themes = themes;
+                res.render('deleteQuestion', {data: data});
+            }
+        }
+    }
+});
+
+app.post('/deleteNext', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else {
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if (isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+        else {
+            let idQuest = (req.body.idQuest === undefined) ? "1" : req.body.idQuest;
+            let maxId = db.returnMaxQuestId();
+            if(Number(idQuest) > maxId) idQuest = maxId;
+            else if(Number(idQuest) < 0) idQuest = 0;
+            let questionData = db.returnQuestionById(idQuest);
+            let data = {
+                idQuest: idQuest,
+                context1: questionData.content1,
+                context2: questionData.content2,
+                idRightAnswer: questionData.idRightAnswer
+            };
+
+            let answerIdArr = [];
+            answerIdArr.push(questionData.idAnswer1);
+            answerIdArr.push(questionData.idAnswer2);
+            answerIdArr.push(questionData.idAnswer3);
+            answerIdArr.push(questionData.idAnswer4);
+            answerIdArr.push(questionData.idAnswer5);
+            answerIdArr.push(questionData.idAnswer6);
+            answerIdArr.push(questionData.idAnswer7);
+
+            let themes = db.selectAllThemes();
+
+            let answerArr = [];
+            for(let i = 0;i < answerIdArr.length;i++){
+                if(answerIdArr[i])
+                    answerArr.push(db.returnAnswerById(answerIdArr[i]));
+                else
+                    answerArr.push('');
+            }
+            data.answers = answerArr;
+            data.themes = themes;
+            res.render('deleteQuestion', {data: data});
+        }
     }
 });

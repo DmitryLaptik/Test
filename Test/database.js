@@ -555,8 +555,46 @@ class DataBase{
         }
     }
 
+    returnQusetionById(idQuest){
+        let me = this;
+        let qusetion = me.dbSync.run(`select * from questions where idQuest = ${idQuest}`)[0];
+        return question;
+    }
+
+    updateQuestion(idQuest,context1, context2, answers, idRightAnswer, theme) {
+        let arrAnswersId = [];
+        for (let i = 0; i < answers.length; i++) {
+            if (answers[i] !== undefined && answers[i].length > 0) {
+                if (this.checkAnswer(answers[i]) === true)
+                    arrAnswersId.push(this.insertAndReturnId('answers', answers[i]));
+                else
+                    arrAnswersId.push(this.dbSync.run(`select idAnswer from answers where content = '${answers[i]}'`)[0].idAnswer);
+            } else {
+                arrAnswersId.push(null);
+            }
+        }
+        theme = this.selectIdFromThemes(theme);
+        if (context2.length < 1) context2 = null;
+
+        console.log(this.updateQuestionTable(idQuest, context1, context2, arrAnswersId, idRightAnswer, theme));
+
+    }
+
+    updateQuestionTable(idQuest, context1, context2, arrAnswersId, idRightAnswer, theme){
+        let me = this;
+        let last_inserted_id = me.dbSync.run(`update questions set content1 = '${context1}', content2 = '${context2}', idAnswer1 = ${arrAnswersId[0]},idAnswer2 = ${arrAnswersId[1]},idAnswer3 = ${arrAnswersId[2]},idAnswer4 = ${arrAnswersId[3]},idAnswer5 = ${arrAnswersId[4]},idAnswer6 = ${arrAnswersId[5]},idAnswer7 = ${arrAnswersId[6]},idRightAnswer = ${arrAnswersId[idRightAnswer]},idTheme = ${theme} where idQuest = ${idQuest}`);
+        return last_inserted_id
+    }
     checkQuestion(context1,context2){
-        return this.dbSync.run(`select * from questions where context1 = '${context1}' and context2 = '${context2}'`).length < 1;
+        return this.dbSync.run(`select idQuest from questions where content1 = '${context1}' and content2 = '${context2}'`).length < 1;
+    }
+
+    returnQuestionId(context1,context2){
+        return this.dbSync.run(`select idQuest from questions where content1 = '${context1}' and content2 = '${context2}'`);
+    }
+
+    returnQuestionById(idQuest){
+        return this.dbSync.run(`select * from questions where idQuest = '${idQuest}'`)[0];
     }
 
     selectThemeNameById(idTheme) {
@@ -685,12 +723,19 @@ class DataBase{
         console.log('nextTest');
     }
 
+    deleteQuestionById(idQuest){
+        let me = this;
+        me.dbSync.run('delete from questions where idQuest = ' + idQuest);
+    }
 
     tableDelete(table){
         let me = this;
         me.dbSync.run('Drop TABLE '+table);
     };
 
+    returnMaxQuestId(){
+        return this.dbSync.run('select max(idQuest) from questions')[0]['max(idQuest)'];
+    }
     clearResultsUser(userId){
         let me = this;
         me.dbSync.run(`delete from results where idUser = ${Number(userId)}`);
@@ -707,7 +752,8 @@ class DataBase{
 }
 
 let db = new DataBase();
-console.log(db.checkQuestion('Что выведет консоль?',"let i = 0; \r\ni.content = 'hello'\r\nconsole.log(i.content);"));
+console.log(db.dbSync.run('select * from questions where idQuest < 15'));
+
 exports = module.exports;
 
 exports.DataBase = DataBase;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name = "viewport" content="width = device- width, initial-scale=1.0">
     <meta http-equiv = "X-AU-Compatible" content="ie=edge">
-    <title>Вход для администраторов</title>
+    <title>Администратор</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../../css/rPageStyles.css">
@@ -33,6 +33,16 @@
                 <input type = "hidden" name = "login">
                 <input type = "hidden" name = "password">
                 <button type="submit" onclick="saveData()" >Добавить вопрос</button>
+            </form>
+            <form action = "updateQuest" method="post" >
+                <input type = "hidden" name = "login">
+                <input type = "hidden" name = "password">
+                <button type="submit" onclick="saveData()" >Обновить вопрос</button>
+            </form>
+            <form action = "delete" method="post" >
+                <input type = "hidden" name = "login">
+                <input type = "hidden" name = "password">
+                <button type="submit" onclick="saveData()" >Удалить вопрос</button>
             </form>
             <button id = "backBut" onclick="clearData()">Выйти</button>
         </div>
