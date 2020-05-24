@@ -146,45 +146,6 @@ app.post('/admin_reg', urlencodedP, function (req, res) {
     }
 });
 
-app.post('/addNew', urlencodedP, function (req, res) {
-    if(!req.body) return res.sendStatus(400);
-    else{
-        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
-        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
-        else {
-            let themes = db.selectAllThemes();
-            res.render('addNewQuest',{data: themes});
-        }
-    }
-});
-
-app.post('/add', urlencodedP, function (req, res) {
-    if(!req.body) return res.sendStatus(400);
-    else{
-        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
-        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
-        else {
-            let newQuest = {
-                context1 :req.body.context1,
-                context2 :req.body.context2,
-                answers :[]
-            };
-            newQuest.answers.push(req.body.answer1);
-            newQuest.answers.push(req.body.answer2);
-            newQuest.answers.push(req.body.answer3);
-            newQuest.answers.push(req.body.answer4);
-            newQuest.answers.push(req.body.answer5);
-            newQuest.answers.push(req.body.answer6);
-            newQuest.answers.push(req.body.answer7);
-            newQuest.idRightAnswer = Number(req.body.answer);
-            newQuest.idTheme = req.body.theme;
-            db.createNewQuestion(newQuest.context1, newQuest.context2,newQuest.answers,newQuest.idRightAnswer,newQuest.idTheme);
-            let themes = db.selectAllThemes();
-            res.render('addNewQuest',{data: themes});
-        }
-    }
-});
-
 app.post('/get_all', urlencodedP, function (req, res) {
     if(!req.body) return res.sendStatus(400);
     else{
