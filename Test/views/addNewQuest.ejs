@@ -73,13 +73,16 @@
             document.querySelectorAll('input, select').forEach(function(e) {
                 if(e.value === '') e.value = sessionStorage.getItem(e.name);
             });
-            sessionStorage.clear();
         }
     </script>
 </head>
 <body>
 <div id="wrapper3">
-    <button id='prevPage' onclick="history.back(); return false;">Вернуться назад</button>
+    <form  action="admin_reg" id = "newQuest" method="post" style = "left: 20%; position: relative;" >
+        <input type = "hidden" name = "login">
+        <input type = "hidden" name = "password">
+        <button id='prevPage' type="submit" onclick="saveData()">Вернуться назад</button>
+    </form>
     <form  action="add" id = "newQuest" method="post">
         <input type = "hidden" name = "login">
         <input type = "hidden" name = "password">

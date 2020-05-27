@@ -9,10 +9,33 @@
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../css/rPageStyles.css">
     <link rel="stylesheet" href="../css/tableStyle.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
 
+
+        });
+        function saveData(){
+            // выбираем на странице все элементы типа textarea и input
+            document.querySelectorAll('input').forEach(function(e) {
+                sessionStorage.setItem(e.name, e.value);
+            });
+
+        }
+    </script>
 </head>
 <body>
-<div id="back">
+<div id="wrapper3">
+    <form  action="get_all" id = "newQuest" method="post" style = "left: 20%; position: relative; margin-left: -17%; margin-bottom: 1%;" >
+        <input type = "hidden" name = "login">
+        <input type = "hidden" name = "password">
+        <button id='prevPage' type="submit" onclick="saveData()">Вернуться назад</button>
+    </form>
     <table id = "resultOneTable">
         <tr>
             <th>Фамилия</th>
@@ -20,6 +43,7 @@
             <th>Желаемая должность</th>
             <th>Тема теста</th>
             <th>Оценка за теста</th>
+            <th>Правильных</th>
         </tr>
         <tr>
             <td><%=usersData.fName%></td>
@@ -27,17 +51,16 @@
             <td><%=usersData.position%></td>
             <td><%=usersData.theme%></td>
             <td><%=usersData.testMark%></td>
+            <td><%=usersData.countGood%></td>
         </tr>
     </table>
-    <button id='prevPage2' onclick="history.back(); return false;">Вернуться назад</button>
-
     <% for(let i = 0; i < usersData.questResults.length; i++) {%>
     <p>Вопрос <%=i+1%></p><br>
     <fieldset>
         <legend><%=usersData.questResults[i].content1%></legend>
         <pre><code><%=usersData.questResults[i].content2%></code></pre><br>
         <% for(let j = 0; j < usersData.questResults[i].arrAnswers.length; j++) {%>
-            <input type="radio" required name="answer"  hidden = hidden id="r<%= j+1%>" disabled = disabled><label for = "r<%= j+1%>" style = " background-color:<% if(usersData.questResults[i].answerIdArr[j] == usersData.questResults[i].idRightAnswer){%> green<%}else if(usersData.questResults[i].idAnswer == usersData.questResults[i].answerIdArr[j]){%>red<%}%>"><%= usersData.questResults[i].arrAnswers[j]%></label><br>
+            <input type="radio" required name="answer"  hidden = hidden id="r<%= j+1%>" disabled = disabled><label for = "r<%= j+1%>" style = " background-color:<% if(usersData.questResults[i].idAnswer){if(usersData.questResults[i].answerIdArr[j] == usersData.questResults[i].idRightAnswer){%> green<%}else if(usersData.questResults[i].idAnswer == usersData.questResults[i].answerIdArr[j]){%>red<%}}%>"><%= usersData.questResults[i].arrAnswers[j]%></label><br>
         <%} %>
     </fieldset>
     <%} %>

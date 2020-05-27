@@ -30,7 +30,12 @@
     });
     function saveData(){
         // выбираем на странице все элементы типа textarea и input
-        document.querySelectorAll('input').forEach(function(e) {
+        let option = document.getElementById('themeId');
+        let input = document.getElementsByName('themeId');
+        for(let i = 0; i < input.length;i++){
+            input[i].value = option.value;
+        }
+        document.querySelectorAll('input, select').forEach(function(e) {
             sessionStorage.setItem(e.name, e.value);
         });
 
@@ -38,7 +43,6 @@
 </script>
 <body onload="updateTextArea()">
 <div id="wrapper3">
-    <p><</p>
     <div>
         <form  action="admin_reg" id = "newQuest" method="post" style = "left: 0%; position: relative; " >
             <input type = "hidden" name = "login">
@@ -48,18 +52,21 @@
         <form  action="deleteNext" id = "newQuest" method="post" style = "left: -33%; position: relative" >
             <input type = "hidden" name = "login">
             <input type = "hidden" name = "password">
+            <input type = "hidden" id = "nextThemeId" name = "themeId">
             <input type="hidden" name = "idQuest" value = "<%= Number(data.idQuest)-1%>"><br>
             <button id='prev' type="submit" onclick="saveData()" <%if(Number(data.idQuest)>1){%><%}else{%>hidden = true<%}%>>Предыдущий</button>
         </form>
         <form  action="deleteNext" id = "newQuest" method="post" style = "left: 67%; position: relative; margin-left:-150px; margin-top: <% if(Number(data.idQuest)>1){%>-8%<%}else{%>0%<%}%>">
             <input type = "hidden" name = "login">
             <input type = "hidden" name = "password">
+            <input type = "hidden" id = "nextThemeId" name = "themeId">
             <input type="hidden" name = "idQuest" value = "<%= Number(data.idQuest)+1%>"><br>
             <button id='next2' type="submit" onclick="saveData()" >Следующий</button><br>
         </form>
         <form  action="deleteNext" id = "newQuest" method="post" style = "left: 22%; position: relative; margin-left:-150px">
             <input type = "hidden" name = "login">
             <input type = "hidden" name = "password">
+            <input type = "hidden" id = "nextThemeId" name = "themeId">
             <input type="text" name = "idQuest" style = "left: 43%; position: relative; width:150px" value = "<%= data.idQuest%>"><br>
             <button id='submit' type="submit" onclick="saveData()" style = "left: 47.5%; margin-bottom:5%;margin-top:1% ">Показать</button>
         </form>
@@ -67,10 +74,11 @@
     <form  action="delete" id = "newQuest" method="post">
         <input type = "hidden" name = "login">
         <input type = "hidden" name = "password">
+        <input type = "hidden" id = "nextThemeId" name = "themeId">
         <input type="hidden" name = "idQuest" value = "<%= data.idQuest%>">
-        <span style="left: 10%; position: relative">Тема вопроса<select name = "theme" disabled = disabled>
+        <span style="left: 10%; position: relative">Тема вопроса<select id = "themeId" name = "theme">
                 <% for(let j = 0; j < data.themes.length; j++) {%>
-                    <option value = "<%= data.themes[j].name%>"><%= data.themes[j].name%></option>
+                <option <%if(data.themes[j].name == data.theme){%>selected = "selected"<%}%> value = "<%= data.themes[j].name%>"><%= data.themes[j].name%></option>
                 <%}%>
             </select></span><br>
         <textarea name = "context1" placeholder="Вопрос" minlength="2" value = "<%=data.context1%>" ><%=data.context1%></textarea><br>

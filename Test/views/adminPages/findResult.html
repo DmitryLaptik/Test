@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta http-equiv="content-type" content="text/html">
+    <meta charset="UTF-8">
+    <meta name = "viewport" content="width = device- width, initial-scale=1.0">
+    <meta http-equiv = "X-AU-Compatible" content="ie=edge">
+    <title>Вход для администраторов</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css"  href="">
+    <link rel="stylesheet" href="../../css/rPageStyles.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('textarea, input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
+
+        });
+        function saveData(){
+            // выбираем на странице все элементы типа textarea и input
+            document.querySelectorAll('input').forEach(function(e) {
+                sessionStorage.setItem(e.name, e.value);
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div id="wrapper3">
+    <form  action="admin_reg" id = "newQuest" method="post" style = "left: 20%; position: relative; margin-left: -15%; margin-bottom: 1%;" >
+        <input type = "hidden" name = "login">
+        <input type = "hidden" name = "password">
+        <button id='prevPage' type="submit" onclick="saveData()">Вернуться назад</button>
+    </form>
+    <div id = "find_area">
+        <form action="find" method="post" >
+            <input type = "hidden" name = "login">
+            <input type = "hidden" name = "password">
+            <input id = "fName" type="text" name = "firstName" placeholder="Фамилия"><br>
+            <input id = "sName" type="text" name = "secondName" placeholder="Имя"><br>
+            <select name = "position">
+                <option value="Техник-программист">Техник-программист</option>
+                <option value="Инженер-программист">Инженер-программист</option>
+            </select><br>
+            <select name = "theme">
+                <option value="JavaScript">JavaScript</option>
+                <option value="ООП">ООП</option>
+                <option value="HTML">HTML</option>
+            </select>
+            <br><br>
+            <button id = "subButton" type="submit">Найти</button>
+        </form>
+
+    </div>
+</div>
+</body>
+</html>

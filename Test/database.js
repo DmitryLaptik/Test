@@ -423,15 +423,29 @@ class DataBase{
         return me.dbSync.run('SELECT fName, sName, testMark, theme FROM users where idUser = ' + userId)[0];
     }
 
+    createTrigger(){
+        let me = this;
+        me.dbSync.run('CREATE TRIGGER IF NOT EXISTS addResTest2 \n' +
+            '   AFTER UPDATE ON results ' +
+            'BEGIN\n' +
+            ' update users \n' +
+            ' set countFinishQuest = countFinishQuest + 1 \n' +
+            ' where idUser = NEW.idUser;\n' +
+            ' END');
+    }
+    dropTrigger(){
+        let me = this;
+        me.dbSync.run('DROP TRIGGER addResTest2');
+    }
     returnPositionById(positionId){
         let me = this;
         return me.dbSync.run(`SELECT name FROM positions where idPosition = ${positionId} ` )[0].name;
     }
 
-    returnQusetionByUserId(userId){
+    returnQuestionByUserId(userId){
         let me = this, questions, returnResult = [];
         let answerIdArr = [], answerArr = [];
-        let results = me.dbSync.run(`select idQuest, idAnswer from results where results.idUser = ${userId}`);
+        let results = me.dbSync.run(`select idQuest, idAnswer from results where results.idUser = ${userId} order by results.idResult desc limit 15`);
         for(let i = 0 ; i < results.length; i++) {
 
             questions = me.dbSync.run('SELECT * FROM questions where idQuest = ' + results[i].idQuest)[0];
@@ -448,16 +462,9 @@ class DataBase{
             answerIdArr.push(questions.idAnswer5);
             answerIdArr.push(questions.idAnswer6);
             answerIdArr.push(questions.idAnswer7);
-
-
-            answerArr.push(me.returnAnswerById(questions.idAnswer1));
-            answerArr.push(me.returnAnswerById(questions.idAnswer2));
-            answerArr.push(me.returnAnswerById(questions.idAnswer3));
-            answerArr.push(me.returnAnswerById(questions.idAnswer4));
-            answerArr.push(me.returnAnswerById(questions.idAnswer5));
-            answerArr.push(me.returnAnswerById(questions.idAnswer6));
-            answerArr.push(me.returnAnswerById(questions.idAnswer7));
-
+            for(let j = 0; j < answerIdArr.length; j++){
+                answerArr.push(me.returnAnswerById(answerIdArr[j]));
+            }
             answerArr = answerArr.filter(function (el) {
                 return el != null;
             });
@@ -496,10 +503,13 @@ class DataBase{
 
     };
     updateResult(tableName, userId, questId,result){
-        var last_insert_id = this.dbSync.run(`UPDATE ${tableName} set idAnswer = ${result} where idUser = ${userId} and idQuest = ${questId}`);
+        let arr = this.dbSync.run(`select idResult from results where idUser = ${userId} and idQuest = ${questId} and idAnswer IS NULL`)[0];
+        var last_insert_id = this.dbSync.run(`UPDATE ${tableName} set idAnswer = ${result} where idUser = ${userId} and idQuest = ${questId} and idResult = ${arr.idResult}`);
         console.log(this.dbSync.run(`SELECT *  FROM ${tableName}  where idUser = ${userId} and idQuest = ${questId}`))
     };
-
+    updateUser(userId,countFinishTest){
+        var last_insert_id = this.dbSync.run(`UPDATE users set idAnswer = ${result} where idUser = ${userId} and idQuest = ${questId}`);
+    };
     updateUserMark(userId, testMark){
         var last_insert_id = this.dbSync.run(`UPDATE users set testMark = ${testMark} where idUser = ${userId}`);};
 
@@ -525,7 +535,12 @@ class DataBase{
         for(let i = 0; i < allThemes.length; i++){
             let countQuest = me.dbSync.run(`select idQuest from questions where idTheme = ${allThemes[i].idTheme} `).length;
             if(countQuest >=15){
-                themes.push(me.selectThemeNameById(allThemes[i].idTheme));
+                let themeName = me.selectThemeNameById(allThemes[i].idTheme).name;
+                let theme = {
+                    themeName: themeName,
+                    questCount: countQuest
+                };
+                themes.push(theme);
             }
         }
         return themes;
@@ -555,12 +570,6 @@ class DataBase{
         }
     }
 
-    returnQusetionById(idQuest){
-        let me = this;
-        let qusetion = me.dbSync.run(`select * from questions where idQuest = ${idQuest}`)[0];
-        return question;
-    }
-
     updateQuestion(idQuest,context1, context2, answers, idRightAnswer, theme) {
         let arrAnswersId = [];
         for (let i = 0; i < answers.length; i++) {
@@ -582,6 +591,8 @@ class DataBase{
 
     updateQuestionTable(idQuest, context1, context2, arrAnswersId, idRightAnswer, theme){
         let me = this;
+        let quest = me.returnQuestionById(idQuest, theme);
+        idQuest = quest.idQuest;
         let last_inserted_id = me.dbSync.run(`update questions set content1 = '${context1}', content2 = '${context2}', idAnswer1 = ${arrAnswersId[0]},idAnswer2 = ${arrAnswersId[1]},idAnswer3 = ${arrAnswersId[2]},idAnswer4 = ${arrAnswersId[3]},idAnswer5 = ${arrAnswersId[4]},idAnswer6 = ${arrAnswersId[5]},idAnswer7 = ${arrAnswersId[6]},idRightAnswer = ${arrAnswersId[idRightAnswer]},idTheme = ${theme} where idQuest = ${idQuest}`);
         return last_inserted_id
     }
@@ -593,8 +604,19 @@ class DataBase{
         return this.dbSync.run(`select idQuest from questions where content1 = '${context1}' and content2 = '${context2}'`);
     }
 
-    returnQuestionById(idQuest){
-        return this.dbSync.run(`select * from questions where idQuest = '${idQuest}'`)[0];
+    returnQuestionById(idQuest,themeId){
+        let arr = this.dbSync.run(`select * from questions where idTheme = ${themeId}`);
+        return arr[idQuest-1];
+    }
+
+    deleteQuestionById(idQuest){
+        let arr = this.dbSync.run(`select * from questions`);
+        let content1 =  arr[idQuest-1].content1;
+        let content2 =  arr[idQuest-1].content2;
+        if(content2 && content2.length > 0)
+            this.dbSync.run(`delete from questions where content1 = '${content1}' and  content2 = '${content2}'`);
+        else
+            this.dbSync.run(`delete from questions where content1 = '${content1}'`);
     }
 
     selectThemeNameById(idTheme) {
@@ -628,13 +650,13 @@ class DataBase{
         let me = this;
         me.dbSync.run(`DELETE FROM ${tableName}`);
     }
-    getTest(userId, themeId){
+    getTest(countFinishQuest, userId, themeId){
 
         let me = this, arrId = [], randomId = null, i;
         let questions =  me.dbSync.run(`SELECT * FROM questions where idTheme = ${themeId}`);
-        let results = me.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser =  '${userId}' and idTheme = ${themeId} and idAnswer IS NULL`);
+        let results = me.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser = ${userId} and idTheme = ${themeId} and idAnswer IS NULL`);
         if(results.length === 0) {
-            results = me.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser =  '${userId}' and idTheme = ${themeId}`);
+            results = me.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser = ${userId} and idTheme = ${themeId} order by results.idResult desc limit ${countFinishQuest}`);
 
             for(i = 0; i < results.length;i++) arrId.push(results[i].idQuest);
             if(arrId.length !== 15) {
@@ -655,7 +677,7 @@ class DataBase{
     };
 
     getCountResult(userId,themeId){
-        let results = this.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser =  '${userId}' and idTheme = ${themeId}`);
+        let results = this.dbSync.run(`SELECT results.idQuest FROM results, questions where questions.idQuest = results.idQuest and idUser =  '${userId}' and idTheme = ${themeId} order by results.idResult desc limit 15`);
         return results.length;
     }
     returnAnswerById(idAnswer){
@@ -680,8 +702,12 @@ class DataBase{
 
     checkResult(userId,questId){
         let me = this;
-        let answer =  me.dbSync.run(`SELECT idAnswer FROM results where idUser = ${userId} and idQuest = ${questId}`)[0];
-        if(answer) return false;
+        let arr = me.dbSync.run(`SELECT * FROM results where idUser = ${userId} and idQuest = ${questId} `);
+        if(arr.length > 0) {
+            let answer = arr[arr.length - 1];
+            if (answer) return false;
+            else        return true;
+        }
         else return true;
     }
 
@@ -723,22 +749,20 @@ class DataBase{
         console.log('nextTest');
     }
 
-    deleteQuestionById(idQuest){
-        let me = this;
-        me.dbSync.run('delete from questions where idQuest = ' + idQuest);
-    }
+
 
     tableDelete(table){
         let me = this;
         me.dbSync.run('Drop TABLE '+table);
     };
 
-    returnMaxQuestId(){
-        return this.dbSync.run('select max(idQuest) from questions')[0]['max(idQuest)'];
+    returnMaxQuestId(themeId){
+        let count  = this.dbSync.run(`select count(idQuest) from questions where idTheme = ${themeId}`)[0];
+        return count['count(idQuest)'];
     }
     clearResultsUser(userId){
         let me = this;
-        me.dbSync.run(`delete from results where idUser = ${Number(userId)}`);
+        me.dbSync.run(`delete from results where idUser = ${userId}`);
     }
     calcUserResult(userId){
         let me = this;
@@ -748,11 +772,12 @@ class DataBase{
         and idUser = ${userId} order by results.idResult desc limit 15`).length;
         return count/countAllQuestions * 100;
     }
-
+    returnCountGoodQuest(userId){
+        let count = this.dbSync.run(`SELECT * from results, questions where questions.idQuest 
+            = results.idQuest and results.idAnswer = questions.idRightAnswer and idUser = ${userId} order by results.idResult desc limit 15`).length;
+        return count;
+    }
 }
-
-let db = new DataBase();
-console.log(db.dbSync.run('select * from questions where idQuest < 15'));
 
 exports = module.exports;
 

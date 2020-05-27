@@ -50,20 +50,27 @@ app.post('/choose',(req, res) => {
 app.post('/test',urlencodedP,function (req,res) {//регистрация
     if(!req.body) return res.sendStatus(400);
 
-    let DBdata = null,  isExist = false,idPosition, userId, result;
+    let DBdata = null, countFinishQuest, isExist = null, idPosition, userId, result;
 
     if(req.body.firstName && req.body.secondName) {
         DBdata = {firstName:req.body.firstName, secName:req.body.secondName,position:req.body.position};
         idPosition = db.selectIdFromPositions(DBdata.position);
         let isExist = db.returnUserId(DBdata.firstName,DBdata.secName, req.body.choose, idPosition);
-        if(isExist == null) db.insertValue('users',DBdata.firstName,DBdata.secName,0, null, db.selectIdFromPositions(DBdata.position), req.body.choose);
-        userId = db.returnUserId(DBdata.firstName,DBdata.secName, req.body.choose, idPosition);
+        if(isExist == null) {
+            db.insertValue('users',DBdata.firstName,DBdata.secName,0, null, db.selectIdFromPositions(DBdata.position), req.body.choose);
+            userId = db.returnUserId(DBdata.firstName,DBdata.secName, req.body.choose, idPosition);
+        }
+        else{
+            userId = isExist;
+            countFinishQuest = db.returnTestCount(Number(userId));
+            if(countFinishQuest === 0) db.clearResultsUser(userId);
+        }
     }
     else{
         console.log(req.body);
         userId = req.body.idUser;
     }
-    let countFinishQuest  = db.returnTestCount(Number(userId));
+    countFinishQuest = db.returnTestCount(Number(userId));
     if (req.body.answer) {
         if(countFinishQuest <= 15) {
             let arrId = req.body.answersIds.split(',');
@@ -77,7 +84,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         db.updateUserMark(userId, result.toFixed(1));
         db.resetTestCount(userId, result.toFixed(1));
         let position = db.selectIdPositionsFromUsers(userId);
-        data.questResults = db.returnQusetionByUserId(userId);
+        data.questResults = db.returnQuestionByUserId(userId);
         data.userId = userId;
 
         res.render('resultpage', {data:data});
@@ -86,7 +93,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         let themeId;
         if(req.body.idTheme) themeId = req.body.idTheme;
         else themeId = db.selectIdFromThemes(req.body.choose);
-        result = db.getTest(userId, themeId);
+        result = db.getTest(countFinishQuest, userId, themeId);
         let answerIdArr = [];
         if(!result) return res.sendStatus(400);
         answerIdArr.push(result.idAnswer1);
@@ -163,15 +170,25 @@ app.post('/get_all', urlencodedP, function (req, res) {
 
 });
 
+app.post('/findUser', urlencodedP, function (req, res) {
+    let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+    if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+    else {
+        res.sendFile(PROJ_DIR + 'views/adminPages/findResult.html');
+    }
+});
 
 app.post('/find', urlencodedP, function (req, res) {
-    if(!req.body) return res.sendStatus(400);
-    else{
+    let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+    if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
+    else {
         let userId = db.returnUserId(req.body.firstName, req.body.secondName, req.body.theme, db.selectIdFromPositions(req.body.position));
         if (userId !== null) {
             let data = db.returnUserById(userId);
             data.position = req.body.position;
-            data.questResults = db.returnQusetionByUserId(userId);
+            data.questResults = db.returnQuestionByUserId(userId);
+            data.questResults = data.questResults.reverse();
+            data.countGood = db.returnCountGoodQuest(userId);
             res.render('findUser', {usersData: data});
         }
         else{
@@ -181,7 +198,44 @@ app.post('/find', urlencodedP, function (req, res) {
     }
 });
 
+app.post('/addNew', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
+        else {
+            let themes = db.selectAllThemes();
+            res.render('addNewQuest',{data: themes});
+        }
+    }
+});
 
+app.post('/add', urlencodedP, function (req, res) {
+    if(!req.body) return res.sendStatus(400);
+    else{
+        let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
+        if(isAccess === false) res.sendFile(PROJ_DIR + 'views/adminPages/authorization.html');
+        else {
+            let newQuest = {
+                context1 :req.body.context1,
+                context2 :req.body.context2,
+                answers :[]
+            };
+            newQuest.answers.push(req.body.answer1);
+            newQuest.answers.push(req.body.answer2);
+            newQuest.answers.push(req.body.answer3);
+            newQuest.answers.push(req.body.answer4);
+            newQuest.answers.push(req.body.answer5);
+            newQuest.answers.push(req.body.answer6);
+            newQuest.answers.push(req.body.answer7);
+            newQuest.idRightAnswer = Number(req.body.answer);
+            newQuest.idTheme = req.body.theme;
+            db.createNewQuestion(newQuest.context1, newQuest.context2,newQuest.answers,newQuest.idRightAnswer,newQuest.idTheme);
+            let themes = db.selectAllThemes();
+            res.render('addNewQuest',{data: themes});
+        }
+    }
+});
 
 app.post('/updateQuest', urlencodedP, function (req, res) {
     if(!req.body) return res.sendStatus(400);
@@ -189,18 +243,23 @@ app.post('/updateQuest', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if (isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
         else {
+            let theme;
             let idQuest = (req.body.idQuest === undefined) ? "1" : req.body.idQuest;
-            let maxId = db.returnMaxQuestId();
+            if(req.body.themeId)      theme = db.selectIdFromThemes(req.body.themeId);
+            else if(req.body.theme)   theme = db.selectIdFromThemes(req.body.theme);
+            else                      theme = 1;
+            let maxId = db.returnMaxQuestId(theme);
             if(Number(idQuest) > maxId) idQuest = maxId;
             else if(Number(idQuest) < 0) idQuest = 0;
-            let questionData = db.returnQuestionById(idQuest);
+
+            let questionData = db.returnQuestionById(idQuest, theme);
             let data = {
                 idQuest: idQuest,
                 context1: questionData.content1,
                 context2: questionData.content2,
                 idRightAnswer: questionData.idRightAnswer
             };
-
+            data.theme = db.selectThemeNameById(questionData.idTheme).name;
             let answerIdArr = [];
             answerIdArr.push(questionData.idAnswer1);
             answerIdArr.push(questionData.idAnswer2);
@@ -232,8 +291,12 @@ app.post('/update', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
         else {
+            let theme;
             let idQuest = (req.body.idQuest === undefined) ? "1" : req.body.idQuest;
-            let maxId = db.returnMaxQuestId();
+            if(req.body.themeId)      theme = db.selectIdFromThemes(req.body.themeId);
+            else if(req.body.theme)   theme = db.selectIdFromThemes(req.body.theme);
+            else                      theme = 1;
+            let maxId = db.returnMaxQuestId(theme);
             if(Number(idQuest) > maxId) idQuest = maxId;
             else if(Number(idQuest) < 0) idQuest = 0;
             let newQuest = {
@@ -242,6 +305,7 @@ app.post('/update', urlencodedP, function (req, res) {
                 context2: req.body.context2,
                 answers: []
             };
+            newQuest.theme = db.selectThemeNameById(questionData.idTheme).name;
             newQuest.answers.push(req.body.answer1);
             newQuest.answers.push(req.body.answer2);
             newQuest.answers.push(req.body.answer3);
@@ -265,15 +329,17 @@ app.post('/delete', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
         else {
-            let isValid = true, idQuest;
+            let isValid = true, idQuest, theme;
             if(req.body.idQuest === undefined) {
                 isValid = false;
                 idQuest = "1";
             }else{
                 idQuest = req.body.idQuest;
             }
-
-            let maxId = db.returnMaxQuestId();
+            if(req.body.themeId)      theme = db.selectIdFromThemes(req.body.themeId);
+            else if(req.body.theme)   theme = db.selectIdFromThemes(req.body.theme);
+            else                      theme = 1;
+            let maxId = db.returnMaxQuestId(theme);
             if(Number(idQuest) > maxId) {
                 idQuest = maxId;
             }
@@ -281,7 +347,7 @@ app.post('/delete', urlencodedP, function (req, res) {
                 idQuest = 0;
             }
             if(!isValid){
-                let questionData = db.returnQuestionById(1);
+                let questionData = db.returnQuestionById(1,theme);
                 let data = {
                     idQuest: 1,
                     context1: questionData.content1,
@@ -290,6 +356,7 @@ app.post('/delete', urlencodedP, function (req, res) {
                 };
 
                 let answerIdArr = [];
+                data.theme = db.selectThemeNameById(questionData.idTheme).name;
                 answerIdArr.push(questionData.idAnswer1);
                 answerIdArr.push(questionData.idAnswer2);
                 answerIdArr.push(questionData.idAnswer3);
@@ -313,7 +380,7 @@ app.post('/delete', urlencodedP, function (req, res) {
             }
             else{
                 db.deleteQuestionById(idQuest);
-                let questionData = db.returnQuestionById(1);
+                let questionData = db.returnQuestionById(1,theme);
                 let data = {
                     idQuest: 1,
                     context1: questionData.content1,
@@ -322,6 +389,7 @@ app.post('/delete', urlencodedP, function (req, res) {
                 };
 
                 let answerIdArr = [];
+                data.theme = db.selectThemeNameById(questionData.idTheme).name;
                 answerIdArr.push(questionData.idAnswer1);
                 answerIdArr.push(questionData.idAnswer2);
                 answerIdArr.push(questionData.idAnswer3);
@@ -353,18 +421,22 @@ app.post('/deleteNext', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if (isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
         else {
+            let theme;
             let idQuest = (req.body.idQuest === undefined) ? "1" : req.body.idQuest;
-            let maxId = db.returnMaxQuestId();
+            if(req.body.themeId)      theme = db.selectIdFromThemes(req.body.themeId);
+            else if(req.body.theme)   theme = db.selectIdFromThemes(req.body.theme);
+            else                      theme = 1;
+            let maxId = db.returnMaxQuestId(theme);
             if(Number(idQuest) > maxId) idQuest = maxId;
             else if(Number(idQuest) < 0) idQuest = 0;
-            let questionData = db.returnQuestionById(idQuest);
+            let questionData = db.returnQuestionById(idQuest,theme);
             let data = {
                 idQuest: idQuest,
                 context1: questionData.content1,
                 context2: questionData.content2,
                 idRightAnswer: questionData.idRightAnswer
             };
-
+            data.theme = db.selectThemeNameById(questionData.idTheme).name;
             let answerIdArr = [];
             answerIdArr.push(questionData.idAnswer1);
             answerIdArr.push(questionData.idAnswer2);

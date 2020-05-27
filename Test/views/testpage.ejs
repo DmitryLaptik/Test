@@ -25,10 +25,21 @@
 
             }
         }
+        function back(form){
+            let question = 'Желаете выйти?';
+            let result = confirm(question);
+            if(result) {
+                form.submit()
+            }
+            else return false
+        }
     </script>
 </head>
 <body>
 <div id = "back">
+    <form  action="/" id = "newQuest" method="post" style = "left: 10%; position: relative; " onsubmit=" return back(this)">
+        <button id = "mainBackBut" >Вернуться на главную</button>
+    </form>
 <p>Вопрос <%=testData.countFinishQuest%> из 15</p><br>
 <form action="test" method="post">
 <fieldset id = "form" onclick="activate()" >

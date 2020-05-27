@@ -9,10 +9,37 @@
     <link rel="stylesheet" href="../css/rPageStyles.css">
     <link rel="stylesheet" href="../css/tableStyle.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('textarea, input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
+
+        });
+        function saveData(){
+            // выбираем на странице все элементы типа textarea и input
+            document.querySelectorAll('input').forEach(function(e) {
+                sessionStorage.setItem(e.name, e.value);
+            });
+
+        }
+    </script>
 </head>
 <body>
 <div id="wrapper3">
-    <button id='prevPage' onclick="history.back(); return false;">Вернуться назад</button>
+    <form action="findUser" id="newQuest" method="post" style="position: relative;top: 2%;margin-bottom: -4.5%;left: 96%;margin-left: 10%;width: 30px;margin-top: -3%;">]
+        <input type = "hidden" name = "login">
+        <input type = "hidden" name = "password">
+        <button id='prevPage' type="submit" onclick="saveData()">Найти пользователя</button>
+    </form>
+    <form action="admin_reg" id="newQuest" method="post" style="left: 20%;top: -9%; position: relative; margin-left: -6%;width:30px; margin-bottom: -1%;">
+        <input type = "hidden" name = "login">
+        <input type = "hidden" name = "password">
+        <button id='prevPage' type="submit" onclick="saveData()">Вернуться назад</button>
+    </form>
     <table id = "resultTable" border="1">
         <tr>
             <th>Фамилия</th>
@@ -22,8 +49,10 @@
             <th>Тема теста</th>
         </tr>
         <% for(let i = 0; i < usersData.length; i++) {%>
-            <tr><td><%= usersData[i].fName %></td><td><%=usersData[i].sName %></td><td><%=usersData[i].position %></td><td><%=usersData[i].testMark %></td><td><%=usersData[i].theme%></td><td>
+            <tr><td><%= usersData[i].fName %></td><td><%=usersData[i].sName %></td><td><%=usersData[i].position %></td><td style = "background-color: <%if (usersData[i].position === 'Техник-программист') if(usersData[i].testMark >= 60){%>lightgreen<%}else{%>lightcoral<%}%><%if (usersData[i].position === 'Инженер-программист') if(usersData[i].testMark >= 80){%>lightgreen<%}else{%>lightcoral<%}%>" ><%=usersData[i].testMark %></td><td><%=usersData[i].theme%></td><td>
                     <form action="find" method="post" >
+                        <input type = "hidden" name = "login">
+                        <input type = "hidden" name = "password">
                         <input type = "hidden" name = "firstName" value = "<%= usersData[i].fName %>">
                         <input type = "hidden" name = "secondName" value = "<%=usersData[i].sName %>">
                         <input type = "hidden" name = "position" value = "<%=usersData[i].position %>">

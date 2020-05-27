@@ -14,9 +14,17 @@
             if(e.value === '') e.value = sessionStorage.getItem(e.name);
         });
     }
+    document.addEventListener("DOMContentLoaded", function() { // событие загрузки страницы
+            document.querySelectorAll('textarea, input').forEach(function(e) {
+                if(e.value === '') e.value = sessionStorage.getItem(e.name, e.value);
+                e.addEventListener('input', function() {
+                    sessionStorage.setItem(e.name, e.value);
+                })
+            })
+
+        });
     function clearData(){
         sessionStorage.clear();
-        history.back(); return false;
     }
     </script>
 </head>
@@ -44,7 +52,9 @@
                 <input type = "hidden" name = "password">
                 <button type="submit" onclick="saveData()" >Удалить вопрос</button>
             </form>
-            <button id = "backBut" onclick="clearData()">Выйти</button>
+            <form action = "admin" method="get" style="top: 50%;position: relative;" >
+                <button id = "backBut" type="submit" onclick="clearData()">Выйти</button>
+            </form>
         </div>
     </div>
 </body>
