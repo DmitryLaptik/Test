@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-    <meta http-equiv="content-type" content="text/html">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta charset="UTF-8">
     <meta name = "viewport" content="width = device- width, initial-scale=1.0">
     <meta http-equiv = "X-AU-Compatible" content="ie=edge">
     <title>Результаты всех пользователей</title>
+    <script type="text/html" src="../../Test/js/jsPDF/main.js" ></script>
     <link rel="stylesheet" type="text/css"  href="">
     <link rel="stylesheet" href="../css/rPageStyles.css">
     <link rel="stylesheet" href="../css/tableStyle.css">
@@ -24,7 +25,12 @@
             document.querySelectorAll('input').forEach(function(e) {
                 sessionStorage.setItem(e.name, e.value);
             });
-
+        }
+        function switchIndex(number) {
+            let indexes = document.getElementsByName('index');
+            for(let i = 0; i < indexes.length;i++){
+                indexes[i].value = Number(indexes[i].value) + number;
+            }
         }
     </script>
 </head>
@@ -40,6 +46,33 @@
         <input type = "hidden" name = "password">
         <button id='prevPage' type="submit" onclick="saveData()">Вернуться назад</button>
     </form>
+    <table>
+    <td style = "background: none;border: none;">
+        <form action="get_all" method="post">
+        <input type = "hidden" name = "login">
+        <input type = "hidden" name = "password">
+        <input type = "hidden" name = "index" value = "<%=usersData.index%>">
+        <button id='prevPage' type="submit" onclick="switchIndex(-1)" style="position: unset;margin-left: auto;">Назад</button>
+        </form>
+    </td>
+    <td style = "background: none;border: none;">
+        <form action="print" method="post">
+            <input type = "hidden" name = "login">
+            <input type = "hidden" name = "password">
+            <input type = "hidden" name = "index" value = "<%=usersData.index%>">
+            <button id='prevPage' type="submit" style="position: unset;margin-left: auto;">Печать</button>
+        </form>
+    </td>
+    <td style = "background: none;border: none;">
+        <form action="get_all" method="post">
+            <input type = "hidden" name = "login">
+            <input type = "hidden" name = "password">
+            <input type = "hidden" name = "index" value = "<%=usersData.index%>">
+            <button id='prevPage' type="submit" onclick="switchIndex(1)" style="position: unset;margin-left: auto;">Вперед</button>
+        </form>
+    </td>
+
+    </table>
     <table id = "resultTable" border="1">
         <tr>
             <th>Фамилия</th>

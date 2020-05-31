@@ -447,36 +447,40 @@ class DataBase{
         let answerIdArr = [], answerArr = [];
         let results = me.dbSync.run(`select idQuest, idAnswer from results where results.idUser = ${userId} order by results.idResult desc limit 15`);
         for(let i = 0 ; i < results.length; i++) {
-
             questions = me.dbSync.run('SELECT * FROM questions where idQuest = ' + results[i].idQuest)[0];
-            returnResult[i] = {};
-            returnResult[i].content1 = questions.content1;
-            returnResult[i].content2 = questions.content2;
-            returnResult[i].idRightAnswer = questions.idRightAnswer;
-            returnResult[i].idAnswer = results[i].idAnswer;
+            if (questions) {
+                returnResult[i] = {};
+                returnResult[i].content1 = questions.content1;
+                returnResult[i].content2 = questions.content2;
+                returnResult[i].idRightAnswer = questions.idRightAnswer;
+                returnResult[i].idAnswer = results[i].idAnswer;
 
-            answerIdArr.push(questions.idAnswer1);
-            answerIdArr.push(questions.idAnswer2);
-            answerIdArr.push(questions.idAnswer3);
-            answerIdArr.push(questions.idAnswer4);
-            answerIdArr.push(questions.idAnswer5);
-            answerIdArr.push(questions.idAnswer6);
-            answerIdArr.push(questions.idAnswer7);
-            for(let j = 0; j < answerIdArr.length; j++){
-                answerArr.push(me.returnAnswerById(answerIdArr[j]));
+                answerIdArr.push(questions.idAnswer1);
+                answerIdArr.push(questions.idAnswer2);
+                answerIdArr.push(questions.idAnswer3);
+                answerIdArr.push(questions.idAnswer4);
+                answerIdArr.push(questions.idAnswer5);
+                answerIdArr.push(questions.idAnswer6);
+                answerIdArr.push(questions.idAnswer7);
+                for (let j = 0; j < answerIdArr.length; j++) {
+                    answerArr.push(me.returnAnswerById(answerIdArr[j]));
+                }
+                answerArr = answerArr.filter(function (el) {
+                    return el != null;
+                });
+                answerIdArr = answerIdArr.filter(function (el) {
+                    return el != null;
+                });
+
+                returnResult[i].arrAnswers = answerArr;
+                returnResult[i].answerIdArr = answerIdArr;
+                answerIdArr = [];
+                answerArr = [];
             }
-            answerArr = answerArr.filter(function (el) {
-                return el != null;
-            });
-            answerIdArr = answerIdArr.filter(function (el) {
-                return el != null;
-            });
-
-            returnResult[i].arrAnswers = answerArr;
-            returnResult[i].answerIdArr = answerIdArr;
-            answerIdArr = [];
-            answerArr = [];
         }
+        returnResult = returnResult.filter(function (el) {
+            return el != null;
+        });
         return returnResult
     }
     initDataThemes() {//answers

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta charset="UTF-8">
+    <meta name = "viewport" content="width = device- width, initial-scale=1.0">
+    <meta http-equiv = "X-AU-Compatible" content="ie=edge">
+    <title>Результаты всех пользователей</title>
+    <style>
+        body{
+            margin: 0;
+        }
+        table {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+            font-size: 14px;
+            border-radius: 10px;
+            text-align: center;
+            margin-left: -150px;
+            left:50%;
+            position:relative;
+            border-collapse: collapse;
+            border: 0px solid #666;
+        }
+        th {
+            background: #BCEBDD;
+            color: white;
+            text-shadow: 0 1px 1px #2D2020;
+            padding: 10px 20px;
+        }
+        th, td {
+            border-style: solid;
+            border-width: 0 1px 1px 0;
+            border-color: white;
+        }
+        th:first-child, td:first-child {
+            text-align: left;
+        }
+        th:first-child {
+            border-top-left-radius: 10px;
+        }
+        th:last-child {
+            border-top-right-radius: 10px;
+            border-right: none;
+            border-bottom: none;
+        }
+        td {
+            padding: 10px 20px;
+            background: #F8E391;
+        }
+        tr:last-child td:first-child {
+            border-radius: 0 0 0 10px;
+            border-bottom: none;
+        }
+        tr:last-child td:last-child {
+            border-radius: 0 0 10px 0;
+            border-bottom: none;
+        }
+        tr td:last-child {
+            border-right: none;
+        }
+        table#resultOneTable{
+            margin-left: -150px;
+            left:23%;
+            position:relative;
+            max-width: 50%;
+        }
+        table#resultTable{
+            font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+            font-size: 14px;
+            border-radius: 10px;
+            text-align: center;
+            left: 26%;
+            position: relative;
+            border: 0px solid #666;
+        }
+        #wrapper3 {
+            background-color: skyblue;
+            padding-left: 10%;
+            padding-right: 10%;
+            padding-top: 3%;
+            padding-bottom: 3%;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            height: 100%;
+            max-width: 1000px;
+            margin: auto;
+            max-height: 100%;
+
+        }
+    </style>
+<body>
+<div id="wrapper3">
+    <table id = "resultTable" border="1">
+        <tr>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Желаемая должность</th>
+            <th>Оценка</th>
+            <th>Тема теста</th>
+        </tr>
+        <% for(let i = 0; i < usersData.length; i++) {%>
+            <tr><td><%= usersData[i].fName %></td><td><%=usersData[i].sName %></td><td><%=usersData[i].position %></td><td style = "background-color: <%if (usersData[i].position === 'Техник-программист') if(usersData[i].testMark >= 60){%>lightgreen<%}else{%>lightcoral<%}%><%if (usersData[i].position === 'Инженер-программист') if(usersData[i].testMark >= 80){%>lightgreen<%}else{%>lightcoral<%}%>" ><%=usersData[i].testMark %></td><td><%=usersData[i].theme%></td></tr>
+        <%} %>
+    </table>
+</div>
+</body>
+</html>

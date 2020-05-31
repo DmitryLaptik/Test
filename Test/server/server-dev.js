@@ -1,8 +1,10 @@
 const express = require('express');
 const path = require('path');
 const bodyP = require('body-parser');
+const ejs = require('ejs');
+const pdf = require('html-pdf');
 const { DataBase } = require('../database.js');
-
+const fs = require('fs');
 const app = express(), PROJ_DIR = path.dirname(__dirname) + '\\';
 
 const db = new DataBase();
@@ -85,6 +87,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
         db.resetTestCount(userId, result.toFixed(1));
         let position = db.selectIdPositionsFromUsers(userId);
         data.questResults = db.returnQuestionByUserId(userId);
+        data.questResults = data.questResults.reverse();
         data.userId = userId;
 
         res.render('resultpage', {data:data});
@@ -131,6 +134,7 @@ app.post('/test',urlencodedP,function (req,res) {//регистрация
 });
 
 
+
 app.post('/next',urlencodedP,function (req,res) {
     if(!req.body) return res.sendStatus(400);
     let data = {firstName:req.body.firstName, secName:req.body.secondName};
@@ -159,8 +163,18 @@ app.post('/get_all', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
         else {
-            let data =  db.getAllUserResults();
-
+            let data = db.getAllUserResults();
+            if(req.body.index) {
+                if(req.body.index < 0) req.body.index = 0;
+                else if(req.body.index > Math.ceil(data.length/10)-1) req.body.index = Math.ceil(data.length/10)-1;
+                let count = 10 * req.body.index;
+                data = data.slice(count, 10 + count);
+                data.index = req.body.index;
+            }
+            else if(data.length >= 10){
+                data = data.slice(0, 10);
+                data.index = 0;
+            }
             for(let i = 0; i < data.length;i++) {
                 data[i].position = db.returnPositionById(data[i].idPosition);
             }
@@ -192,7 +206,7 @@ app.post('/find', urlencodedP, function (req, res) {
             res.render('findUser', {usersData: data});
         }
         else{
-            res.sendFile(PROJ_DIR + 'views/adminPages/MainPage.html');
+            res.sendFile(PROJ_DIR + 'views/adminPages/findResult.html');
         }
 
     }
@@ -305,7 +319,7 @@ app.post('/update', urlencodedP, function (req, res) {
                 context2: req.body.context2,
                 answers: []
             };
-            newQuest.theme = db.selectThemeNameById(questionData.idTheme).name;
+            newQuest.theme = db.selectThemeNameById(theme).name;
             newQuest.answers.push(req.body.answer1);
             newQuest.answers.push(req.body.answer2);
             newQuest.answers.push(req.body.answer3);
@@ -461,3 +475,44 @@ app.post('/deleteNext', urlencodedP, function (req, res) {
         }
     }
 });
+app.post('/print',urlencodedP,(req, res)=>{
+    let data =  db.getAllUserResults();
+    if(req.body.index) {
+        if(req.body.index < 0) req.body.index = 0;
+        else if(req.body.index > Math.ceil(data.length/10)-1) req.body.index = Math.ceil(data.length/10)-1;
+        let count = 10 * req.body.index;
+        data = data.slice(count, 10 + count);
+        data.index = req.body.index;
+    }
+    else if(data.length >= 10){
+        data = data.slice(0, 10);
+        data.index = 0;
+    }
+    for(let i = 0; i < data.length;i++) {
+        data[i].position = db.returnPositionById(data[i].idPosition);
+    }
+
+    ejs.renderFile(PROJ_DIR + 'views\\getAllResults_pdf.ejs', {usersData: data}, (err, html) => {
+
+        let options = { format: 'A4'};
+        let fileName = PROJ_DIR + 'views\\file.pdf';
+
+        let renderHtml = html;
+
+        pdf.create(renderHtml, options).toFile(fileName, (err) => {
+            if (err) {
+                console.log('Ошибка конвертации', err)
+            }
+            else {
+                var file = fs.createReadStream(fileName);
+                var stat = fs.statSync(fileName);
+                res.setHeader('Content-Length', stat.size);
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=Results.pdf');
+                file.pipe(res);
+            }
+        });
+
+    });
+});
+
