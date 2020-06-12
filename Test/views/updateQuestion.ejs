@@ -124,7 +124,8 @@
     <form  action="update" id = "newQuest" method="post">
         <input type = "hidden" name = "login">
         <input type = "hidden" name = "password">
-        <input type="hidden" name = "idQuest" value = "<%= data.idQuest%>   ">
+        <input type="hidden" name = "idQuest" value = "<%= data.idQuest%>">
+        <input type = "hidden" name = "oldThemeId" value = "<%= data.idTheme%>">
         <span style="left: 10%; position: relative">Тема вопроса<select id = "themeId" name = "theme">
                 <% for(let j = 0; j < data.themes.length; j++) {%>
                     <option <%if(data.themes[j].name == data.theme){%>selected = "selected"<%}%> value = "<%= data.themes[j].name%>"><%= data.themes[j].name%></option>

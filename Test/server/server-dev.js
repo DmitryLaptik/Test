@@ -271,7 +271,8 @@ app.post('/updateQuest', urlencodedP, function (req, res) {
                 idQuest: idQuest,
                 context1: questionData.content1,
                 context2: questionData.content2,
-                idRightAnswer: questionData.idRightAnswer
+                idRightAnswer: questionData.idRightAnswer,
+                idTheme: questionData.idTheme
             };
             data.theme = db.selectThemeNameById(questionData.idTheme).name;
             let answerIdArr = [];
@@ -305,10 +306,10 @@ app.post('/update', urlencodedP, function (req, res) {
         let isAccess = db.checkAdminInTable(req.body.login, req.body.password);
         if(isAccess === false) res.sendFile(PROJ_DIR + 'views/MainPage.html');
         else {
-            let theme;
+            let theme, themeId;
             let idQuest = (req.body.idQuest === undefined) ? "1" : req.body.idQuest;
-            if(req.body.themeId)      theme = db.selectIdFromThemes(req.body.themeId);
-            else if(req.body.theme)   theme = db.selectIdFromThemes(req.body.theme);
+            if(req.body.oldThemeId)      themeId = req.body.oldThemeId;
+            if(req.body.theme)        theme = db.selectIdFromThemes(req.body.theme);
             else                      theme = 1;
             let maxId = db.returnMaxQuestId(theme);
             if(Number(idQuest) > maxId) idQuest = maxId;
@@ -317,7 +318,9 @@ app.post('/update', urlencodedP, function (req, res) {
                 idQuest: idQuest,
                 context1: req.body.context1,
                 context2: req.body.context2,
-                answers: []
+                answers: [],
+                oldThemeId: themeId,
+                idTheme: theme
             };
             newQuest.theme = db.selectThemeNameById(theme).name;
             newQuest.answers.push(req.body.answer1);
@@ -328,8 +331,8 @@ app.post('/update', urlencodedP, function (req, res) {
             newQuest.answers.push(req.body.answer6);
             newQuest.answers.push(req.body.answer7);
             newQuest.idRightAnswer = Number(req.body.answer);
-            newQuest.idTheme = req.body.theme;
-            db.updateQuestion(idQuest,newQuest.context1, newQuest.context2,newQuest.answers,newQuest.idRightAnswer,newQuest.idTheme);
+            db.updateQuestion(idQuest,newQuest.context1, newQuest.context2,newQuest.answers,newQuest.idRightAnswer,newQuest.idTheme,newQuest.oldThemeId);
+            newQuest.idQuest = db.returnMaxQuestId(newQuest.idTheme);
             let themes = db.selectAllThemes();
             newQuest.themes = themes;
             res.render('updateQuestion', {data: newQuest });

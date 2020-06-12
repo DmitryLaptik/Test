@@ -574,7 +574,7 @@ class DataBase{
         }
     }
 
-    updateQuestion(idQuest,context1, context2, answers, idRightAnswer, theme) {
+    updateQuestion(idQuest,context1, context2, answers, idRightAnswer, theme, oldThemeId) {
         let arrAnswersId = [];
         for (let i = 0; i < answers.length; i++) {
             if (answers[i] !== undefined && answers[i].length > 0) {
@@ -586,11 +586,14 @@ class DataBase{
                 arrAnswersId.push(null);
             }
         }
-        theme = this.selectIdFromThemes(theme);
-        if (context2.length < 1) context2 = null;
-
-        console.log(this.updateQuestionTable(idQuest, context1, context2, arrAnswersId, idRightAnswer, theme));
-
+        if(theme !== Number(oldThemeId)) {
+            idQuest = this.returnQuestionById(idQuest, oldThemeId).idQuest;
+            this.dbSync.run(`delete from questions where idTheme = '${oldThemeId}' and idQuest =  ${idQuest}`);
+            return this.insertValue('questions', context1, context2, arrAnswersId[0], arrAnswersId[1], arrAnswersId[2], arrAnswersId[3], arrAnswersId[4], arrAnswersId[5], arrAnswersId[6], arrAnswersId[idRightAnswer], theme)
+        } else{
+            if (context2.length < 1) context2 = null;
+            console.log(this.updateQuestionTable(idQuest, context1, context2, arrAnswersId, idRightAnswer, theme));
+        }
     }
 
     updateQuestionTable(idQuest, context1, context2, arrAnswersId, idRightAnswer, theme){
